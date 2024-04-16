@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 pub trait Tokenizer<'a> {
     fn signature(&self) -> &str;
-    fn tokenize(&'a mut self, line: &'a str) -> Vec<&'a str>;
+    fn tokenize(&'a mut self, line: &'a str) -> Vec<String>;
 }
 
 #[derive(Debug)]
@@ -27,7 +27,7 @@ impl<'a> Tokenizer<'a> for TokenizerRegex<'a> {
         "re"
     }
 
-    fn tokenize(&'a mut self, line: &'a str) -> Vec<&'a str> {
+    fn tokenize(&'a mut self, line: &'a str) -> Vec<String> {
         if !self.cache.contains_key(line) {
             // todo regex
             let res: Vec<&str> = line.split(' ').collect();
@@ -35,7 +35,7 @@ impl<'a> Tokenizer<'a> for TokenizerRegex<'a> {
         }
         match self.cache.get(&line) {
             None => Vec::new(),
-            Some(cache_res) => cache_res.clone().to_vec()
+            Some(cache_res) => cache_res.iter().map(|&x| x.to_string()).collect()
         }
     }
 }
