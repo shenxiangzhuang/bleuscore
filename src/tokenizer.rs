@@ -36,9 +36,9 @@ impl TokenizerRegex {
 fn regex_tokenize_cache(line: String) -> Vec<String>  {
     let mut res = line;
     for &(ref re_capture, re_replace) in REGEX_ARRAY.iter() {
-        res = re_capture.replace(&res, re_replace).to_string();
+        res = re_capture.replace_all(&res, re_replace).to_string();
     }
-    res.split(' ').map(|x| x.to_string()).filter(|x| !x.is_empty()).collect()
+    res.split_whitespace().map(|x| x.to_string()).collect()
 }
 
 impl Tokenizer for TokenizerRegex {
@@ -59,8 +59,11 @@ mod test {
     #[test]
     fn test_tokenize_regex() {
         let tokenizer_regex = tokenizer::TokenizerRegex::new();
-        let line = "Hello, World!";
-        let res = tokenizer_regex.tokenize(line);
-        assert_eq!(res, vec!["Hello", ",", "World", "!"])
+        let mut line = "Hello, World!";
+        let mut res = tokenizer_regex.tokenize(line);
+        
+        line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
+        res = tokenizer_regex.tokenize(line);
+        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"])
     }
 }

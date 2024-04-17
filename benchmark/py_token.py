@@ -62,6 +62,7 @@ class TokenizerRegexp(BaseTokenizer):
         :return: the tokenized line
         """
         for (_re, repl) in self._re:
+            print(line)
             line = _re.sub(repl, line)
 
         # no leading or trailing spaces, single space within words
@@ -102,4 +103,6 @@ class Tokenizer13a(BaseTokenizer):
 
 if __name__ == "__main__":
     tokenizer = TokenizerRegexp()
-    print(tokenizer("Hello, World!"))
+    print(tokenizer("/usr/sbin/sendmail - 0 errors, 12 warnings"))
+    
+    
