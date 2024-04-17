@@ -11,7 +11,7 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
 
 #[pyfunction]
 fn regex_tokenizer(line: &str) -> PyResult<Vec<String>> {
-    let mut tokenizer_regex = tokenizer::TokenizerRegex::new();
+    let tokenizer_regex = tokenizer::TokenizerRegex::new();
     let res = tokenizer_regex.tokenize(line);
     Ok(res)
 }
