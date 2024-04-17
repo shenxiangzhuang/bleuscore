@@ -61,6 +61,7 @@ mod test {
         let tokenizer_regex = tokenizer::TokenizerRegex::new();
         let mut line = "Hello, World!";
         let mut res = tokenizer_regex.tokenize(line);
+        assert_eq!(res, vec!["Hello", ",", "World", "!"]);
         
         line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
         res = tokenizer_regex.tokenize(line);
