@@ -17,13 +17,14 @@ pub struct TokenizerRegex {
 
 impl TokenizerRegex {
     pub fn new() -> Self {
-        Self {signature: "regex".to_string()}
+        Self {signature: "re".to_string()}
     }
 }
 
 
 #[cached(size=65536)]
 fn regex_tokenize_cache(line: String) -> Vec<String>  {
+    // TODO: real regex process
     line.split(' ').map(|x| x.to_string()).collect()
 }
 
