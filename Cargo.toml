@@ -9,6 +9,7 @@ name = "bleuscore"
 crate-type = ["cdylib"]
 
 [dependencies]
+uluru = "3.1.0"
 
 [dependencies.pyo3]
 version = "0.21.1"
