@@ -2,18 +2,18 @@
 
 use std::collections::HashMap;
 
-pub trait Tokenizer<'a> {
-    fn signature(&self) -> &str;
-    fn tokenize(&'a mut self, line: &'a str) -> Vec<String>;
+pub trait Tokenizer {
+    fn signature(&self) -> String;
+    fn tokenize(&mut self, line: &str) -> Vec<String>;
 }
 
 #[derive(Debug)]
-pub struct TokenizerRegex<'a> {
-    cache: HashMap<&'a str, Vec<&'a str>>
+pub struct TokenizerRegex {
+    cache: HashMap<String, Vec<String>>
 }
 
 
-impl TokenizerRegex<'_> {
+impl TokenizerRegex {
     pub fn new() -> Self {
         Self {
             cache: HashMap::new()
@@ -22,20 +22,21 @@ impl TokenizerRegex<'_> {
 
 }
 
-impl<'a> Tokenizer<'a> for TokenizerRegex<'a> {
-    fn signature(&self) -> &str {
-        "re"
+impl Tokenizer for TokenizerRegex {
+    fn signature(&self) -> String {
+        "re".to_string()
     }
 
-    fn tokenize(&'a mut self, line: &'a str) -> Vec<String> {
-        if !self.cache.contains_key(line) {
+    fn tokenize(&mut self, line: &str) -> Vec<String> {
+        let line_sting = line.to_string();
+        if !self.cache.contains_key(&line_sting) {
             // todo regex
-            let res: Vec<&str> = line.split(' ').collect();
-            self.cache.insert(line, res.clone());
+            let res: Vec<String> = line_sting.split(" ").map(|x| x.to_string()).collect();
+            self.cache.insert(line_sting.clone(), res);
         }
-        match self.cache.get(&line) {
+        match self.cache.get(&line_sting) {
             None => Vec::new(),
-            Some(cache_res) => cache_res.iter().map(|&x| x.to_string()).collect()
+            Some(cache_res) => cache_res.clone()
         }
     }
 }
