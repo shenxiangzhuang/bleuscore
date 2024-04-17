@@ -3,15 +3,15 @@ use cached::proc_macro::cached;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-
 lazy_static! {
-    static ref TOKEN_REGEXES: [Regex; 4] = [
-        Regex::new(r"pattern1").unwrap(),
-        Regex::new(r"pattern2").unwrap(),
-        Regex::new(r"pattern1").unwrap(),
-        Regex::new(r"pattern1").unwrap(),
+    static ref REGEX_ARRAY: [(Regex, &'static str); 4] = [
+        (Regex::new(r"([\{-\~\[-\` -\&\(-\+\:-\@\/])").unwrap(),  r" $1 "),
+        (Regex::new(r"([^0-9])([\.,])").unwrap(), r"$1 $2 "),
+        (Regex::new(r"([\.,])([^0-9])").unwrap(), r" $1 $2"),
+        (Regex::new(r"([0-9])(-)").unwrap(), r"$1 $2 "),
     ];
 }
+
 
 pub trait Tokenizer {
     fn signature(&self) -> String;
@@ -34,8 +34,11 @@ impl TokenizerRegex {
 
 #[cached(size=65536)]
 fn regex_tokenize_cache(line: String) -> Vec<String>  {
-    // TODO: real regex process
-    line.split(' ').map(|x| x.to_string()).collect()
+    let mut res = line;
+    for &(ref re_capture, re_replace) in REGEX_ARRAY.iter() {
+        res = re_capture.replace(&res, re_replace).to_string();
+    }
+    res.split(' ').map(|x| x.to_string()).filter(|x| !x.is_empty()).collect()
 }
 
 impl Tokenizer for TokenizerRegex {
@@ -58,6 +61,6 @@ mod test {
         let tokenizer_regex = tokenizer::TokenizerRegex::new();
         let line = "Hello, World!";
         let res = tokenizer_regex.tokenize(line);
-        assert_eq!(res, vec!["Hello,", "World!"])
+        assert_eq!(res, vec!["Hello", ",", "World", "!"])
     }
 }
