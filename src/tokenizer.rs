@@ -1,6 +1,17 @@
 /// ref: https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py
 use cached::proc_macro::cached;
+use lazy_static::lazy_static;
+use regex::Regex;
 
+
+lazy_static! {
+    static ref TOKEN_REGEXES: [Regex; 4] = [
+        Regex::new(r"pattern1").unwrap(),
+        Regex::new(r"pattern2").unwrap(),
+        Regex::new(r"pattern1").unwrap(),
+        Regex::new(r"pattern1").unwrap(),
+    ];
+}
 
 pub trait Tokenizer {
     fn signature(&self) -> String;
@@ -10,8 +21,7 @@ pub trait Tokenizer {
 
 #[derive(Debug)]
 pub struct TokenizerRegex {
-    // cache: HashMap<String, Vec<String>>
-    signature: String
+    signature: String,
 }
 
 
