@@ -102,7 +102,7 @@ class Tokenizer13a(BaseTokenizer):
 
 
 if __name__ == "__main__":
-    tokenizer = TokenizerRegexp()
-    print(tokenizer("/usr/sbin/sendmail - 0 errors, 12 warnings"))
+    tokenizer = Tokenizer13a()
+    print(tokenizer("Hello\n-\n, &quot;World!<skipped>"))
     
     

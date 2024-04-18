@@ -51,6 +51,46 @@ impl Tokenizer for TokenizerRegex {
 }
 
 
+
+#[derive(Debug)]
+pub struct Tokenizer13a {
+    signature: String,
+}
+
+
+impl Tokenizer13a {
+    pub fn new() -> Self {
+        Self {signature: "13a".to_string()}
+    }
+}
+
+
+#[cached(size=65536)]
+fn tokenize_13a_cache(line: String) -> Vec<String>  {
+    let mut res = line;
+    res = res.replace("<skipped>", "")
+             .replace("-\n", "")
+             .replace("\n", " ");
+    if res.contains("&") {
+        res = res.replace("&quot;", "\"")
+                 .replace("&amp;", "&")
+                 .replace("&lt;", "<")
+                    .replace("&gt;", ">");
+    }
+    TokenizerRegex::new().tokenize(&format!(" {res} "))
+}
+
+impl Tokenizer for Tokenizer13a {
+    fn signature(&self) -> String {
+        self.signature.clone()
+    }
+    fn tokenize(&self, line: &str) -> Vec<String> {
+        tokenize_13a_cache(line.to_string())
+    }
+}
+
+
+
 #[cfg(test)]
 mod test {
     use crate::tokenizer;
@@ -63,6 +103,18 @@ mod test {
         let mut res = tokenizer_regex.tokenize(line);
         assert_eq!(res, vec!["Hello", ",", "World", "!"]);
         
+        line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
+        res = tokenizer_regex.tokenize(line);
+        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"])
+    }
+
+    #[test]
+    fn test_tokenize_13a_regex() {
+        let tokenizer_regex = tokenizer::Tokenizer13a::new();
+        let mut line = "Hello, &quot;World!<skipped>";
+        let mut res = tokenizer_regex.tokenize(line);
+        assert_eq!(res, vec!["Hello", ",", "\"", "World", "!"]);
+
         line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
         res = tokenizer_regex.tokenize(line);
         assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"])
