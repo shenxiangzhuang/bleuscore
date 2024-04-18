@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 import time
 from py_token import TokenizerRegexp, Tokenizer13a
 
-from bleuscore import regex_tokenizer, regex_13a_tokenizer
+from bleuscore import tokenizer_regex, tokenizer_13a
 
 
 def py_regex(line: str) -> list[str]:
@@ -18,11 +18,11 @@ def py_13a(line: str) -> list[str]:
 
 
 def rust_regex(line: str) -> list[str]:
-    return regex_tokenizer(line)
+    return tokenizer_regex(line)
 
 
 def rust_13a_regex(line: str) -> list[str]:
-    return regex_13a_tokenizer(line)
+    return tokenizer_13a(line)
 
 
 # use hypothesis to verify py_regex output equals to rust_regex

@@ -10,14 +10,14 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
 }
 
 #[pyfunction]
-fn regex_tokenizer(line: &str) -> PyResult<Vec<String>> {
+fn tokenizer_regex(line: &str) -> PyResult<Vec<String>> {
     let tokenizer_regex = tokenizer::TokenizerRegex::new();
     let res = tokenizer_regex.tokenize(line);
     Ok(res)
 }
 
 #[pyfunction]
-fn regex_13a_tokenizer(line: &str) -> PyResult<Vec<String>> {
+fn tokenizer_13a(line: &str) -> PyResult<Vec<String>> {
     let tokenizer_13a_regex = tokenizer::Tokenizer13a::new();
     let res = tokenizer_13a_regex.tokenize(line);
     Ok(res)
@@ -27,7 +27,7 @@ fn regex_13a_tokenizer(line: &str) -> PyResult<Vec<String>> {
 #[pymodule]
 fn bleuscore(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
-    m.add_function(wrap_pyfunction!(regex_tokenizer, m)?)?;
-    m.add_function(wrap_pyfunction!(regex_13a_tokenizer, m)?)?;
+    m.add_function(wrap_pyfunction!(tokenizer_regex, m)?)?;
+    m.add_function(wrap_pyfunction!(tokenizer_13a, m)?)?;
     Ok(())
 }
