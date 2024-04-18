@@ -2,26 +2,29 @@
 from hypothesis import given
 from hypothesis import strategies as st
 import time
+
+from typing import List
+
 from py_token import TokenizerRegexp, Tokenizer13a
 
 from bleuscore import tokenizer_regex, tokenizer_13a
 
 
-def py_regex(line: str) -> list[str]:
+def py_regex(line: str) -> List[str]:
     token = TokenizerRegexp()
     return token(line)
 
 
-def py_13a(line: str) -> list[str]:
+def py_13a(line: str) -> List[str]:
     token = Tokenizer13a()
     return token(line)
 
 
-def rust_regex(line: str) -> list[str]:
+def rust_regex(line: str) -> List[str]:
     return tokenizer_regex(line)
 
 
-def rust_13a_regex(line: str) -> list[str]:
+def rust_13a_regex(line: str) -> List[str]:
     return tokenizer_13a(line)
 
 
