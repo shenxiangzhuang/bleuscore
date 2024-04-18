@@ -70,8 +70,8 @@ fn tokenize_13a_cache(line: String) -> Vec<String>  {
     let mut res = line;
     res = res.replace("<skipped>", "")
              .replace("-\n", "")
-             .replace("\n", " ");
-    if res.contains("&") {
+             .replace('\n', " ");
+    if res.contains('&') {
         res = res.replace("&quot;", "\"")
                  .replace("&amp;", "&")
                  .replace("&lt;", "<")
