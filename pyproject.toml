@@ -5,11 +5,67 @@ build-backend = "maturin"
 [project]
 name = "bleuscore"
 requires-python = ">=3.8"
+authors = [
+    {name = 'Mathew Shen', email = 'datahonor@gmail.com'},
+]
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+#    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-dynamic = ["version"]
+keywords = ["NLP", "Tokenizer", "BLEU", "DeepLearning"]
+dynamic = [
+    "version",
+    "description",
+    "license",
+    "readme",]
+dependencies = []
+
+[project.urls]
+Homepage = 'https://github.com/shenxiangzhuang/bleuscore'
+Source = 'https://github.com/shenxiangzhuang/bleuscore'
+
+[project.optional-dependencies]
+testing = ["pytest", "black==22.3", "ruff"]
+#docs = []
+#dev = []
+
+
 [tool.maturin]
 features = ["pyo3/extension-module"]
+#python-source = "py_src"
+#module-name = "tokenizers.tokenizers"
+#bindings = 'pyo3'
+
+[tool.black]
+line-length = 119
+target-version = ['py35']
+
+[tool.ruff]
+line-length = 119
+target-version = "py311"
+lint.ignore = [
+    # a == None in tests vs is None.
+    "E711",
+    # a == False in tests vs is False.
+    "E712",
+    # try xx import except xx pattern without using the lib.
+    "F401",
+    # Raw type equality is required in asserts
+    "E721",
+    # Import order
+    "E402",
+    # Fixtures unused import
+    "F811",
+]
