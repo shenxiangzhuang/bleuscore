@@ -1,4 +1,5 @@
 mod tokenizer;
+mod ngram;
 
 use pyo3::prelude::*;
 use crate::tokenizer::Tokenizer;
