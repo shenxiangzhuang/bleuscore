@@ -37,15 +37,16 @@ Homepage = 'https://github.com/shenxiangzhuang/bleuscore'
 Source = 'https://github.com/shenxiangzhuang/bleuscore'
 
 [project.optional-dependencies]
-test = ["pytest", "hypothesis", "black", "ruff~=0.3.7"]
+test = ["pytest", "hypothesis"]
+lint = ["black", "ruff~=0.3.7"]
 #docs = []
 #dev = []
 
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-#python-source = "py_src"
-#module-name = "tokenizers.tokenizers"
+python-source = "python"
+module-name = "bleuscore.bleuscore"
 #bindings = 'pyo3'
 
 [tool.black]
@@ -68,4 +69,7 @@ lint.ignore = [
     "E402",
     # Fixtures unused import
     "F811",
+    # To ignore python/blerscore/__init__.py import errors
+    "F403",
+    "F405",
 ]
