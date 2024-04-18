@@ -14,7 +14,7 @@ lazy_static! {
 
 
 pub trait Tokenizer {
-    fn signature(&self) -> String;
+    fn signature(&self) -> &str;
     fn tokenize(&self, line: &str) -> Vec<String>;
 }
 
@@ -42,8 +42,8 @@ fn regex_tokenize_cache(line: String) -> Vec<String>  {
 }
 
 impl Tokenizer for TokenizerRegex {
-    fn signature(&self) -> String {
-        self.signature.clone()
+    fn signature(&self) -> &str {
+        &self.signature
     }
     fn tokenize(&self, line: &str) -> Vec<String> {
         regex_tokenize_cache(line.to_string())
@@ -81,8 +81,8 @@ fn tokenize_13a_cache(line: String) -> Vec<String>  {
 }
 
 impl Tokenizer for Tokenizer13a {
-    fn signature(&self) -> String {
-        self.signature.clone()
+    fn signature(&self) -> &str {
+        &self.signature
     }
     fn tokenize(&self, line: &str) -> Vec<String> {
         tokenize_13a_cache(line.to_string())
