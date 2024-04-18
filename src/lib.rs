@@ -1,5 +1,6 @@
 mod tokenizer;
 mod ngram;
+mod bleu;
 
 use pyo3::prelude::*;
 use crate::tokenizer::Tokenizer;
