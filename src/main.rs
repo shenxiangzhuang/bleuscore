@@ -1,6 +1,7 @@
-use counter::Counter;
-
 fn main() {
-    let mut counts = "able babble table babble rabble table able fable scrabble"
-        .split_whitespace().collect::<Counter<_>>();
+    for i in 1..=4 {
+        for j in 0..=(2 - i) {
+            println!("{i}, {j}");
+        }
+    }
 }
