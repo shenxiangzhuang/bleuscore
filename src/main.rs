@@ -1,4 +1,7 @@
 fn main() {
-    let line = "Hello  ,     World !";
-    println!("{:?}", line.split_whitespace().map(|x| x.to_string()).collect::<Vec<String>>());
+    for i in 1..=4 as usize {
+        for j in 0..=(2 - i) {
+            println!("{i}, {j}");
+        }
+    }
 }

@@ -4,8 +4,10 @@ use counter::Counter;
 pub fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
     let mut counts: Counter<&str> = Counter::new();
     for order in 1..=max_order {
-        for start_index in 0..=(line.len() - order) {
+        for start_index in 0..(line.len().saturating_sub(order - 1)) {
+            // println!("line: {}, start_index: {}, order: {}", line, start_index, order);
             let ngram = &line[start_index..(start_index + order)];
+            // println!("ngram: {}", ngram);
             counts[&ngram] += 1;
         }
     }
@@ -32,5 +34,13 @@ mod test {
 
         assert_eq!(counter[&"aab"], 1);
         assert_eq!(counter[&"aabc"], 1);
+    }
+
+    #[test]
+    fn test_get_ngram_short() {
+        let counter = get_ngram_counter("ab", 4);
+        assert_eq!(counter[&"a"], 1);
+        assert_eq!(counter[&"b"], 1);
+        assert_eq!(counter[&"ab"], 1);
     }
 }
