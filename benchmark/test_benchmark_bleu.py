@@ -39,7 +39,7 @@ def test_bleu(input_text):
     max_order = 4
     smooth = True
 
-    py_result = rust_result = 0
+    py_result = rust_result = {}
     t0 = time.time()
     for i in range(10):
         py_result = py_bleu.compute_bleu(reference_corpus=references,
@@ -52,6 +52,8 @@ def test_bleu(input_text):
                                              translation_corpus=predictions,
                                              max_order=max_order,
                                              smooth=smooth)
+        print(rust_result)
+        rust_result = rust_result.get("bleu")
     t2 = time.time()
     print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
     assert (py_result - rust_result) < 1e-10
