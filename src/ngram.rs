@@ -4,10 +4,10 @@ use counter::Counter;
 pub fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
     let mut counts: Counter<&str> = Counter::new();
     for order in 1..=max_order {
-        for start_index in 0..=(line.len() - order) {
-            println!("line: {}, start_index: {}, order: {}", line, start_index, order);
+        for start_index in 0..(line.len().saturating_sub(order - 1)) {
+            // println!("line: {}, start_index: {}, order: {}", line, start_index, order);
             let ngram = &line[start_index..(start_index + order)];
-            println!("ngram: {}", ngram);
+            // println!("ngram: {}", ngram);
             counts[&ngram] += 1;
         }
     }

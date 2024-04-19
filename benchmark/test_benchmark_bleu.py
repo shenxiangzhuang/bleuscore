@@ -34,7 +34,7 @@ def build_translation_pair(text: str, n: int = 10) -> Tuple[List[str], List[List
 
 @given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126),
                min_size=10, max_size=20))
-def test_regex_tokenizer(input_text):
+def test_bleu(input_text):
     predictions, references = build_translation_pair(text=input_text, n=10)
     max_order = 4
     smooth = True
