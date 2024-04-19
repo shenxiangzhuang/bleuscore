@@ -5,8 +5,16 @@ pub fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
     let mut counts: Counter<&str> = Counter::new();
     for order in 1..=max_order {
         for start_index in 0..=(line.len() - order) {
-            let ngram = &line[start_index..(start_index + order)];
-            counts[&ngram] += 1;
+            if (start_index + order) <= line.len() {
+                // println!("line: {}, start_index: {}, order: {}", line, start_index, order);
+                let ngram = &line[start_index..(start_index + order)];
+                // println!("ngram: {}", ngram);
+                counts[&ngram] += 1;
+            }
+            // why have to break here?(If no break, will hang here)
+            else{
+                break
+            }
         }
     }
     counts

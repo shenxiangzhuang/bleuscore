@@ -1,4 +1,6 @@
+use counter::Counter;
+
 fn main() {
-    let line = "Hello  ,     World !";
-    println!("{:?}", line.split_whitespace().map(|x| x.to_string()).collect::<Vec<String>>());
+    let mut counts = "able babble table babble rabble table able fable scrabble"
+        .split_whitespace().collect::<Counter<_>>();
 }
