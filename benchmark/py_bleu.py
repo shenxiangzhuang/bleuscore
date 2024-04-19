@@ -110,3 +110,8 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
     bleu = geo_mean * bp
 
     return (bleu, precisions, bp, ratio, translation_length, reference_length)
+
+
+if __name__ == "__main__":
+    res = compute_bleu(reference_corpus=[["Hello"]], translation_corpus=["Yellow"], max_order=4, smooth=True)
+    print(res)

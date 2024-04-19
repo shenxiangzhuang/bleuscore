@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::ops::Add;
 use counter::Counter;
 use crate::ngram::get_ngram_counter;
@@ -19,7 +18,7 @@ pub fn compute_bleu(
     translation_corpus: &Vec<&str>,
     max_order: usize,
     smooth: bool,
-) {
+) -> BleuScore {
     let mut matches_by_order: Vec<usize> = vec![0; max_order];
     let mut possible_matches_by_order: Vec<usize> = vec![0; max_order];
     let mut references_length: usize = 0;
@@ -27,11 +26,9 @@ pub fn compute_bleu(
     
     for (references, translation) in 
         reference_corpus.iter().zip(translation_corpus.iter()) {
-        
         references_length += references.iter().map(|&x| x.len()).min().unwrap();
         translation_length += translation.len();
-
-        let mut translation_ngram_counts = get_ngram_counter(translation, max_order);
+        let translation_ngram_counts = get_ngram_counter(translation, max_order);
         let mut merged_ref_ngram_counts = Counter::new();
         for &reference in references {
             merged_ref_ngram_counts |= get_ngram_counter(reference, max_order);
@@ -47,27 +44,54 @@ pub fn compute_bleu(
                 possible_matches_by_order[order - 1] += possible_matches
             }
         }
+    }
         
-        let mut precisions:Vec<f64> = vec![0.0; max_order];
-        for i in 0..max_order {
-            match smooth {
-                true => {
-                    precisions[i] = (matches_by_order[i] as f64 + 1.0) / (possible_matches_by_order[i] as f64 + 1.0);
-                },
-                false => {
-                    if possible_matches_by_order[i] > 0 {
-                        precisions[i] = (matches_by_order[i] as f64) / (possible_matches_by_order[i] as f64)
-                    }
-                    else { 
-                        precisions[i] = 0.0;
-                    }
+    let mut precisions:Vec<f64> = vec![0.0; max_order];
+    for i in 0..max_order {
+        match smooth {
+            true => {
+                precisions[i] = (matches_by_order[i] as f64 + 1.0) / (possible_matches_by_order[i] as f64 + 1.0);
+            },
+            false => {
+                if possible_matches_by_order[i] > 0 {
+                    precisions[i] = (matches_by_order[i] as f64) / (possible_matches_by_order[i] as f64)
+                }
+                else { 
+                    precisions[i] = 0.0;
                 }
             }
         }
-        
-        if precisions.iter().fold(f64::INFINITY, |a, &b| a.min(b)) > 0.0 {
-            
-        }
     }
     
+    let mut geo_mean = 0.0;
+    
+    if precisions.iter().fold(f64::INFINITY, |a, &b| a.min(b)) > 0.0 {
+        let p_log_sum: f64 = (1.0 / max_order as f64) * precisions.iter().map(|&x| x.ln()).sum::<f64>();
+        geo_mean = p_log_sum.exp();
+    }
+
+    let ratio: f64 = translation_length as f64 / references_length as f64;
+    let mut bp = 1.0;
+    if ratio <= 1.0 {
+        bp = (1.0 - 1.0 / ratio).exp();
+    }
+    let bleu = geo_mean * bp;
+    
+    BleuScore{bleu, precisions, bp, ratio, translation_length, reference_length: references_length}
+}
+
+
+#[cfg(test)]
+mod test {
+    use crate::bleu::{compute_bleu};
+    #[test]
+    fn test_bleu() {
+        let reference_corpus: Vec<Vec<&str>> = vec![vec!["Hello"]];
+        let translation_corpus: Vec<&str> = vec!["Yellow"];
+        let max_order: usize = 4;
+        let smooth: bool = true;
+        let res = compute_bleu(&reference_corpus, &translation_corpus, max_order, smooth);
+        // (0.6147881529512643, [0.7142857142857143, 0.6666666666666666, 0.6, 0.5], 1.0, 1.2, 6, 5)
+        assert_eq!(res.translation_length, 6);
+    }
 }
