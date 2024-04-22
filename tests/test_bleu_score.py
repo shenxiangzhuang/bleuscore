@@ -1,3 +1,5 @@
+import datetime
+from typing import List
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -44,8 +46,8 @@ def test_local_py_bleu_simple(demo_references, demo_predictions):
                                  )
 
 
-@settings(max_examples=1000)
-@given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126), min_size=5, max_size=100),
+@settings(max_examples=1000, deadline=datetime.timedelta(seconds=3))
+@given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126), min_size=1, max_size=100),
        st.booleans())
 def test_local_py_bleu(input_text, smooth):
     predictions, references = build_translation_pair(text=input_text, n=3)
@@ -58,13 +60,30 @@ def test_local_py_bleu(input_text, smooth):
                                  )
 
 
-@settings(max_examples=1000)
-@given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126), min_size=5, max_size=100),
-       st.booleans())
-def test_hf_bleu(input_text, smooth):
-    predictions, references = build_translation_pair(text=input_text, n=3)
-    max_order = 4
+def test_hf_bleu_simple(demo_references, demo_predictions):
+    hf_bleu_result_compare(references=demo_references,
+                           predictions=demo_predictions,
+                           max_order=4,
+                           smooth=True,
+                           )
 
+
+@settings(max_examples=1000, deadline=datetime.timedelta(seconds=3))
+@given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126), min_size=1, max_size=100),
+       st.integers(min_value=1, max_value=4),
+       st.booleans())
+def test_hf_bleu(input_text, max_order, smooth):
+    predictions, references = build_translation_pair(text=input_text, n=3)
+    # max_order = 4
+
+    hf_bleu_result_compare(references=references,
+                           predictions=predictions,
+                           max_order=max_order,
+                           smooth=smooth,
+                           )
+
+
+def hf_bleu_result_compare(references, predictions, max_order, smooth, debug=False):
     hf_result = hf_bleu.compute(predictions=predictions,
                                 references=references,
                                 max_order=max_order,
@@ -75,14 +94,13 @@ def test_hf_bleu(input_text, smooth):
                                               max_order=max_order,
                                               smooth=smooth,
                                               )
+    if debug:
+        print(f"hf_result: {hf_result}\n"
+              f"bleuscore_result: {bleuscore_result}")
+
     for key, value in hf_result.items():
         if isinstance(value, list):
             for i, v in enumerate(value):
-                assert number_close(v, bleuscore_result[key][i])
+                assert number_close(v, bleuscore_result[key][i]), f"p: {predictions}\nr: {references}"
         else:
-            assert number_close(hf_result[key], bleuscore_result[key])
-
-
-if __name__ == "__main__":
-    test_local_py_bleu()
-    test_hf_bleu()
+            assert number_close(hf_result[key], bleuscore_result[key]), f"p: {predictions}\nr: {references}"

@@ -87,7 +87,7 @@ fn tokenize_13a_cache(line: String) -> Vec<String>  {
         res = res.replace("&quot;", "\"")
                  .replace("&amp;", "&")
                  .replace("&lt;", "<")
-                    .replace("&gt;", ">");
+                 .replace("&gt;", ">");
     }
     TokenizerRegex::new().tokenize(&format!(" {res} "))
 }

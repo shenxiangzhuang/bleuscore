@@ -1,7 +1,5 @@
-# ref: https://benchmarksgame-team.pages.debian.net/benchmarksgame/performance/regexredux.html
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
-import time
 
 from typing import List
 
@@ -28,32 +26,28 @@ def rust_13a_regex(line: str) -> List[str]:
     return tokenizer_13a(line)
 
 
-# use hypothesis to verify py_regex output equals to rust_regex
+def test_regex_tokenizer_simple(demo_text):
+    assert py_regex(demo_text) == rust_regex(demo_text)
+
+
+@settings(max_examples=1000)
 @given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126),
-               min_size=10, max_size=20))
+               min_size=1, max_size=100))
 def test_regex_tokenizer(input_text):
-    py_result = rust_result = []
-    t0 = time.time()
-    for i in range(10):
-        py_result = py_regex(input_text)
-    t1 = time.time()
-    for i in range(10):
-        rust_result = rust_regex(input_text)
-    t2 = time.time()
-    print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
-    assert py_result == rust_result
+    assert py_regex(input_text) == rust_regex(input_text)
 
 
+def test_13a_tokenizer_simple(demo_text):
+    assert py_13a(demo_text) == rust_13a_regex(demo_text)
+
+
+@settings(max_examples=1000)
 @given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126),
-               min_size=10, max_size=20))
+               min_size=1, max_size=100))
 def test_13a_tokenizer(input_text):
-    py_result = rust_result = []
-    t0 = time.time()
-    for i in range(10):
-        py_result = py_13a(input_text)
-    t1 = time.time()
-    for i in range(10):
-        rust_result = rust_13a_regex(input_text)
-    t2 = time.time()
-    print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
-    assert py_result == rust_result
+    assert py_13a(input_text) == rust_13a_regex(input_text)
+
+
+if __name__ == "__main__":
+    test_regex_tokenizer()
+    test_13a_tokenizer()
