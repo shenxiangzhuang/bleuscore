@@ -27,7 +27,6 @@ import math
 from py_token import Tokenizer13a
 
 
-
 def _get_ngrams(segment, max_order):
     """Extracts all n-grams upto a given maximum order from an input segment.
   
@@ -119,7 +118,7 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
 
     bleu = geo_mean * bp
 
-    return (bleu, precisions, bp, ratio, translation_length, reference_length)
+    return bleu, precisions, bp, ratio, translation_length, reference_length
 
 
 if __name__ == "__main__":

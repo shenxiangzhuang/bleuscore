@@ -21,23 +21,25 @@ pub fn bleu_score(
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
+    // init
     let mut matches_by_order: Vec<usize> = vec![0; max_order];
     let mut possible_matches_by_order: Vec<usize> = vec![0; max_order];
     let mut references_length: usize = 0;
     let mut translation_length: usize = 0;
-    
     let tokenizer = Tokenizer13a::new();
     
     for (references, translation) in 
         reference_corpus.iter().zip(translation_corpus.iter()) {
-        
         // tokenize
         let translation_tokens = tokenizer.tokenize(translation);
-        let references_tokens: Vec<Vec<String>> = references.iter().map(|x| tokenizer.tokenize(x)).collect();
-        // println!("translation_tokens: {:?}\n references_tokens: {:?}", translation_tokens, references_tokens);
-
+        let references_tokens: Vec<Vec<String>> = references.iter()
+                                                            .map(|x| tokenizer.tokenize(x))
+                                                            .collect();
+        // lengths
         references_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
         translation_length += translation_tokens.len();
+        
+        // ngram count
         let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
         let mut merged_ref_ngram_counts = HashMap::new();
         for reference_tokens in references_tokens {
@@ -47,43 +49,43 @@ pub fn bleu_score(
             }
         }
         
-        // let overlap: Vec<String> = merged_ref_ngram_counts.keys().filter(|&key| translation_ngram_counts.contains_key(key)).cloned().collect();
+        // overlap count
         let mut overlap_counts = HashMap::new();
         for (k, v) in translation_ngram_counts {
             let key = k.clone();
             if merged_ref_ngram_counts.contains_key(&key) {
                 overlap_counts.insert(k, min(merged_ref_ngram_counts[&key], v));
-                // println!("({}, {}): trans: {}; ref: {}", key.0, key.1, v, merged_ref_ngram_counts[&key]);
             }
             else { 
                 continue
             }
         }
-        
         for key in overlap_counts.keys() {
             let (_, order) = key;
             matches_by_order[order - 1] += overlap_counts[&key];
-            // println!("order: {order}, match: {}", matches_by_order[order - 1]);
         }
+        
+        // possible match
         for order in 1..=max_order {
             let possible_matches = translation_tokens.len().saturating_sub(order - 1);
             if possible_matches > 0 {
-                // println!("Order: {order}");
                 possible_matches_by_order[order - 1] += possible_matches
             }
         }
     }
-        
+    
+    // precisions calculation
     let mut precisions:Vec<f64> = vec![0.0; max_order];
     for i in 0..max_order {
         match smooth {
             true => {
-                precisions[i] = (matches_by_order[i] as f64 + 1.0) / (possible_matches_by_order[i] as f64 + 1.0);
-                // println!("precision[i]: {i}, {} / {} = {}", matches_by_order[i] as f64 + 1.0, possible_matches_by_order[i] as f64 + 1.0, precisions[i]);
+                precisions[i] = (matches_by_order[i] as f64 + 1.0) / 
+                    (possible_matches_by_order[i] as f64 + 1.0);
             },
             false => {
                 if possible_matches_by_order[i] > 0 {
-                    precisions[i] = (matches_by_order[i] as f64) / (possible_matches_by_order[i] as f64)
+                    precisions[i] = (matches_by_order[i] as f64) / 
+                        (possible_matches_by_order[i] as f64)
                 }
                 else { 
                     precisions[i] = 0.0;
@@ -95,7 +97,9 @@ pub fn bleu_score(
     let mut geo_mean = 0.0;
     
     if precisions.iter().fold(f64::INFINITY, |a, &b| a.min(b)) > 0.0 {
-        let p_log_sum: f64 = (1.0 / max_order as f64) * precisions.iter().map(|&x| x.ln()).sum::<f64>();
+        let p_log_sum: f64 = (1.0 / max_order as f64) * precisions.iter()
+                                                                  .map(|&x| x.ln())
+                                                                  .sum::<f64>();
         geo_mean = p_log_sum.exp();
     }
 
@@ -121,6 +125,6 @@ mod test {
         let res = bleu_score(reference_corpus, translation_corpus, max_order, smooth);
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("BLEU: {:?}", res);
-        assert_eq!((res.bleu - 0.668740304976422).abs() < 1e-10, true);
+        assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
     }
 }

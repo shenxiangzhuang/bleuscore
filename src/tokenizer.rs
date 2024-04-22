@@ -18,15 +18,23 @@ pub trait Tokenizer {
 }
 
 
+/// The implementation is based on 
+/// <https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py>
 #[derive(Debug)]
 pub struct TokenizerRegex {
     pub signature: String,
 }
 
-/// The implementation is based on <https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py>
+impl Default for TokenizerRegex {
+    fn default() -> Self {
+        Self {signature: "re".to_string()}
+    }
+}
+
+
 impl TokenizerRegex {
     pub fn new() -> Self {
-        Self {signature: "re".to_string()}
+        Self::default()
     }
 }
 
@@ -56,10 +64,15 @@ pub struct Tokenizer13a {
     pub signature: String,
 }
 
+impl Default for Tokenizer13a {
+    fn default() -> Self {
+        Self {signature: "13a".to_string()}
+    }
+}
 
 impl Tokenizer13a {
     pub fn new() -> Self {
-        Self {signature: "13a".to_string()}
+        Self::default()
     }
 }
 
@@ -104,7 +117,8 @@ mod test {
         
         line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
         res = tokenizer_regex.tokenize(line);
-        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"])
+        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", 
+                             "-", "0", "errors", ",", "12", "warnings"])
     }
 
     #[test]
@@ -116,6 +130,7 @@ mod test {
 
         line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
         res = tokenizer_regex.tokenize(line);
-        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"])
+        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail",
+                             "-", "0", "errors", ",", "12", "warnings"])
     }
 }

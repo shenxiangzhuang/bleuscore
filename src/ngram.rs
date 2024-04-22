@@ -2,8 +2,12 @@ use std::collections::HashMap;
 use counter::Counter;
 
 
-// replace tokens' type from `&Vec<String>` to `&[String]` to fix `clippy::not_unsafe_ptr_arg_deref`
-pub fn get_token_ngram_counter(tokens: &Vec<String>, max_order: usize) -> HashMap<(String, usize), usize> {
+/// Here the tokens' type is `&[String]` rather than `&Vec<String>`
+/// to fix `clippy::not_unsafe_ptr_arg_deref` error.
+pub fn get_token_ngram_counter(tokens: &Vec<String>, 
+                               max_order: usize,
+                              ) -> HashMap<(String, usize), usize> 
+{
     let mut count_map: HashMap<(String, usize), usize> = HashMap::new();
     for order in 1..=max_order {
         for start_index in 0..(tokens.len().saturating_sub(order - 1)) {
@@ -17,8 +21,8 @@ pub fn get_token_ngram_counter(tokens: &Vec<String>, max_order: usize) -> HashMa
 }
 
 
-// TODO: change to use Counter to count ngram
-#[warn(dead_code)]
+/// TODO: change to use Counter to count ngram
+#[allow(dead_code)]
 fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
     let mut counts: Counter<&str> = Counter::new();
     for order in 1..=max_order {
