@@ -28,11 +28,10 @@ def build_translation_pair(text: str, n: int = 3) -> Tuple[List[str], List[List[
     """
     In huggingface evaluate(also original nmt implementation),
     `ratio = float(translation_length) / reference_length` will raise
-    `ZeroDivisionError: float division by zero` when reference text is ' '
-    Here we just replace this to a fixed 'space' to skip this
+    `ZeroDivisionError: float division by zero` when reference text is empty after tokenize
+    Here we just add some prefix to avoid the occurrence
     """
-    if text == " ":
-        text = "space"
+    text = f"test {text}"
     references = [[text] for _ in range(n)]
     predictions = [shrink_string(shuffle_string(text)) for _ in range(n)]
 
