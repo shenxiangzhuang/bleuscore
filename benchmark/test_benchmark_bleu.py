@@ -56,4 +56,4 @@ def test_bleu(input_text):
         rust_result = rust_result.get("bleu")
     t2 = time.time()
     print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
-    assert (py_result - rust_result) < 1e-10
+    assert abs(py_result - rust_result) < 1e-10

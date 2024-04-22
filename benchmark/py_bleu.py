@@ -24,6 +24,9 @@ evaluation metrics for machine translation. COLING 2004.
 import collections
 import math
 
+from py_token import Tokenizer13a
+
+
 
 def _get_ngrams(segment, max_order):
     """Extracts all n-grams upto a given maximum order from an input segment.
@@ -65,6 +68,11 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
     possible_matches_by_order = [0] * max_order
     reference_length = 0
     translation_length = 0
+
+    tokenizer = Tokenizer13a()
+    reference_corpus = [[tokenizer(r) for r in ref] for ref in reference_corpus]
+    translation_corpus = [tokenizer(p) for p in translation_corpus]
+
     for (references, translation) in zip(reference_corpus,
                                          translation_corpus):
         reference_length += min(len(r) for r in references)

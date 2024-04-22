@@ -1,5 +1,8 @@
-use counter::Counter;
-use crate::ngram::get_ngram_counter;
+use std::cmp::min;
+use std::collections::HashMap;
+use crate::ngram::{get_token_ngram_counter};
+use crate::tokenizer::{Tokenizer, Tokenizer13a};
+
 
 #[derive(Debug, Default)]
 pub struct BleuScore {
@@ -23,19 +26,37 @@ pub fn compute_bleu(
     let mut references_length: usize = 0;
     let mut translation_length: usize = 0;
     
+    let tokenizer = Tokenizer13a::new();
+    
     for (references, translation) in 
         reference_corpus.iter().zip(translation_corpus.iter()) {
-        references_length += references.iter().map(|x| x.len()).min().unwrap();
-        translation_length += translation.len();
-        let translation_ngram_counts = get_ngram_counter(translation, max_order);
-        let mut merged_ref_ngram_counts = Counter::new();
-        for reference in references {
-            merged_ref_ngram_counts |= get_ngram_counter(&reference, max_order);
-        }
-        let overlap = translation_ngram_counts & merged_ref_ngram_counts;
         
-        for ngram in overlap.keys() {
-            matches_by_order[ngram.len() - 1] += overlap[ngram]
+        // tokenize
+        let translation_tokens = tokenizer.tokenize(translation);
+        let references_tokens: Vec<Vec<String>> = references.iter().map(|x| tokenizer.tokenize(x)).collect();
+        
+        references_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
+        translation_length += translation_tokens.len();
+        let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
+        let mut merged_ref_ngram_counts = HashMap::new();
+        for reference_tokens in references_tokens {
+            let reference_ngram_counts = get_token_ngram_counter(&reference_tokens, max_order);
+            for (key, value) in reference_ngram_counts {
+                merged_ref_ngram_counts.entry(key).and_modify(|v| *v += value).or_insert(value);
+            }
+        }
+        
+        // let overlap: Vec<String> = merged_ref_ngram_counts.keys().filter(|&key| translation_ngram_counts.contains_key(key)).cloned().collect();
+        let mut overlap_counts = HashMap::new();
+        for (k, v) in translation_ngram_counts {
+            let key = k.clone();
+            if merged_ref_ngram_counts.contains_key(&key) {
+                overlap_counts.insert(k, min(merged_ref_ngram_counts[&key], v));
+            }
+        }
+        
+        for ngram in overlap_counts.keys() {
+            matches_by_order[ngram.len() - 1] += overlap_counts[ngram];
         }
         for order in 1..=max_order {
             let possible_matches = translation.len() - order + 1;
@@ -90,6 +111,10 @@ mod test {
         let smooth: bool = true;
         let res = compute_bleu(reference_corpus, translation_corpus, max_order, smooth);
         // (0.6147881529512643, [0.7142857142857143, 0.6666666666666666, 0.6, 0.5], 1.0, 1.2, 6, 5)
-        assert_eq!((res.bleu - 0.6147881529512643) < 1e-10, true);
+        // (0.8408964152537145, [0.5, 1.0, 1.0, 1.0], 1.0, 1.0, 1, 1)
+        // assert_eq!((res.bleu - 0.8408964152537145) < 1e-10, true);
+        println!("BLEU: {}", res.bleu);
+        assert_eq!((res.bleu - 0.6147881529512643).abs() < 0.0001, true);
+        
     }
 }

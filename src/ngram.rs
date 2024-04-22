@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use counter::Counter;
 
 
@@ -15,9 +16,22 @@ pub fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
 }
 
 
+pub fn get_token_ngram_counter(tokens: &Vec<String>, max_order: usize) -> HashMap<String, usize> {
+    let mut count_map: HashMap<String, usize> = HashMap::new();
+    for order in 1..=max_order {
+        for start_index in 0..(tokens.len().saturating_sub(order - 1)) {
+            // println!("line: {}, start_index: {}, order: {}", line, start_index, order);
+            let ngram = tokens[start_index..(start_index + order)].join("");
+            // println!("ngram: {}", ngram);
+            count_map.entry(ngram).and_modify(|counter| *counter += 1).or_insert(1);
+        }
+    }
+    count_map
+}
+
 #[cfg(test)]
 mod test {
-    use crate::ngram::{get_ngram_counter};
+    use crate::ngram::{get_ngram_counter, get_token_ngram_counter};
 
     #[test]
     fn test_get_ngram() {
@@ -42,5 +56,14 @@ mod test {
         assert_eq!(counter[&"a"], 1);
         assert_eq!(counter[&"b"], 1);
         assert_eq!(counter[&"ab"], 1);
+    }
+
+    #[test]
+    fn test_get_token_ngram_short() {
+        let tokens = vec!["a".to_string(), "b".to_string()];
+        let counter = get_token_ngram_counter(&tokens,4);
+        assert_eq!(counter[&"a".to_string()], 1);
+        assert_eq!(counter[&"b".to_string()], 1);
+        assert_eq!(counter[&"ab".to_string()], 1);
     }
 }
