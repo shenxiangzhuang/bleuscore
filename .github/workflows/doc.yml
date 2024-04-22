@@ -1,0 +1,36 @@
+name: Deploy Docs to GitHub Pages
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  release:
+    name: GitHub Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+
+      - name: Install Rust toolchain
+        run: rustup update --no-self-update stable
+
+      - name: Build Documentation
+        run: cargo doc --all --no-deps
+
+      # ref: https://dev.to/deciduously/prepare-your-rust-api-docs-for-github-pages-2n5i
+      - name: Link Index page
+        run: |
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=bleuscore\">" > target/doc/index.html
+
+      - name: Deploy Docs
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./target/doc
+          force_orphan: true
