@@ -29,9 +29,12 @@ def compare():
     ]
     predictions = ["hello bleu score from"]
     t0 = time.time()
-    hf_bleu(references, predictions)
+    n_times = 10
+    for _ in range(n_times):
+       hf_bleu(references, predictions)
     t1 = time.time()
-    rust_bleu(references, predictions)
+    for _ in range(n_times):
+        rust_bleu(references, predictions)
     t2 = time.time()
 
     hf_py_bleu_spend_seconds = t1 - t0
