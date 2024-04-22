@@ -29,7 +29,7 @@ def compare():
     ]
     predictions = ["hello bleu score from"]
     t0 = time.time()
-    n_times = 10
+    n_times = 1
     for _ in range(n_times):
        hf_bleu(references, predictions)
     t1 = time.time()
