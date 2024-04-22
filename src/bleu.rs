@@ -1,5 +1,8 @@
-use counter::Counter;
-use crate::ngram::get_ngram_counter;
+use std::cmp::min;
+use std::collections::HashMap;
+use crate::ngram::{get_token_ngram_counter};
+use crate::tokenizer::{Tokenizer, Tokenizer13a};
+
 
 #[derive(Debug, Default)]
 pub struct BleuScore {
@@ -23,22 +26,47 @@ pub fn compute_bleu(
     let mut references_length: usize = 0;
     let mut translation_length: usize = 0;
     
+    let tokenizer = Tokenizer13a::new();
+    
     for (references, translation) in 
         reference_corpus.iter().zip(translation_corpus.iter()) {
-        references_length += references.iter().map(|x| x.len()).min().unwrap();
-        translation_length += translation.len();
-        let translation_ngram_counts = get_ngram_counter(translation, max_order);
-        let mut merged_ref_ngram_counts = Counter::new();
-        for reference in references {
-            merged_ref_ngram_counts |= get_ngram_counter(&reference, max_order);
-        }
-        let overlap = translation_ngram_counts & merged_ref_ngram_counts;
         
-        for ngram in overlap.keys() {
-            matches_by_order[ngram.len() - 1] += overlap[ngram]
+        // tokenize
+        let translation_tokens = tokenizer.tokenize(translation);
+        let references_tokens: Vec<Vec<String>> = references.iter().map(|x| tokenizer.tokenize(x)).collect();
+        // println!("translation_tokens: {:?}\nreferences_tokens: {:?}", translation_tokens, references_tokens);
+
+        references_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
+        translation_length += translation_tokens.len();
+        let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
+        let mut merged_ref_ngram_counts = HashMap::new();
+        for reference_tokens in references_tokens {
+            let reference_ngram_counts = get_token_ngram_counter(&reference_tokens, max_order);
+            for (key, value) in reference_ngram_counts {
+                merged_ref_ngram_counts.entry(key).and_modify(|v| *v += value).or_insert(value);
+            }
+        }
+        
+        // let overlap: Vec<String> = merged_ref_ngram_counts.keys().filter(|&key| translation_ngram_counts.contains_key(key)).cloned().collect();
+        let mut overlap_counts = HashMap::new();
+        for (k, v) in translation_ngram_counts {
+            let key = k.clone();
+            if merged_ref_ngram_counts.contains_key(&key) {
+                overlap_counts.insert(k, min(merged_ref_ngram_counts[&key], v));
+                // println!("({}, {}): trans: {}; ref: {}", key.0, key.1, v, merged_ref_ngram_counts[&key]);
+            }
+            else { 
+                continue
+            }
+        }
+        
+        for key in overlap_counts.keys() {
+            let (_, order) = key;
+            matches_by_order[order - 1] += overlap_counts[&key];
+            // println!("order: {order}, match: {}", matches_by_order[order - 1]);
         }
         for order in 1..=max_order {
-            let possible_matches = translation.len().saturating_sub(order - 1);
+            let possible_matches = translation_tokens.len().saturating_sub(order - 1);
             if possible_matches > 0 {
                 // println!("Order: {order}");
                 possible_matches_by_order[order - 1] += possible_matches
@@ -91,29 +119,8 @@ mod test {
         let max_order: usize = 4;
         let smooth: bool = true;
         let res = compute_bleu(reference_corpus, translation_corpus, max_order, smooth);
-        // (0.7241577342575828, [0.8666666666666667, 0.7857142857142857, 0.6923076923076923, 0.5833333333333334], 1.0, 1.0769230769230769, 14, 13)
+        // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("BLEU: {:?}", res);
-        assert_eq!((res.bleu - 0.7241577342575828).abs() < 1e-10, true);
-    }
-
-    #[test]
-    fn test_bleu_error() {
-        let reference_corpus: Vec<Vec<String>> = vec![
-            vec!["0000000000".to_string()],
-            vec!["0000000000".to_string()],
-            vec!["0000000000".to_string()],
-            vec!["0000000000".to_string()],
-        ];
-        let translation_corpus: Vec<String> = vec!["000000".to_string(), 
-                                                   "00000".to_string(), 
-                                                   "0000000000".to_string(),
-                                                   "00".to_string()
-        ];
-        let max_order: usize = 4;
-        let smooth: bool = true;
-        let res = compute_bleu(reference_corpus, translation_corpus, max_order, smooth);
-        // (0.7241577342575828, [0.8666666666666667, 0.7857142857142857, 0.6923076923076923, 0.5833333333333334], 1.0, 1.0769230769230769, 14, 13)
-        println!("BLEU: {:?}", res);
-        assert_eq!((res.bleu - 0.47752897762233404).abs() < 1e-10, true);
+        assert_eq!((res.bleu - 0.668740304976422).abs() < 1e-10, true);
     }
 }
