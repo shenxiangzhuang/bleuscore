@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use counter::Counter;
 
 
+// replace tokens' type from `&Vec<String>` to `&[String]` to fix `clippy::not_unsafe_ptr_arg_deref`
 pub fn get_token_ngram_counter(tokens: &Vec<String>, max_order: usize) -> HashMap<(String, usize), usize> {
     let mut count_map: HashMap<(String, usize), usize> = HashMap::new();
     for order in 1..=max_order {
@@ -16,6 +17,7 @@ pub fn get_token_ngram_counter(tokens: &Vec<String>, max_order: usize) -> HashMa
 }
 
 
+// TODO: change to use Counter to count ngram
 #[warn(dead_code)]
 fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
     let mut counts: Counter<&str> = Counter::new();
@@ -47,9 +49,9 @@ mod test {
     #[test]
     fn test_get_token_ngram_long() {
         // aabc
-        let tokens: Vec<String> = vec!["a".to_string(), 
-                                       "a".to_string(), 
-                                       "b".to_string(), 
+        let tokens: Vec<String> = vec!["a".to_string(),
+                                       "a".to_string(),
+                                       "b".to_string(),
                                        "c".to_string()];
         let counter = get_token_ngram_counter(&tokens,4);
         assert_eq!(counter[&("a".to_string(), 1)], 2);
@@ -65,7 +67,7 @@ mod test {
         assert_eq!(counter[&("aab".to_string(), 3)], 1);
         assert_eq!(counter[&("abc".to_string(), 3)], 1);
         assert_eq!(counter[&("aabc".to_string(), 4)], 1);
-        
+
         assert_eq!(counter.len(), 9);
     }
 
@@ -77,7 +79,7 @@ mod test {
         assert_eq!(counter[&"b"], 1);
         assert_eq!(counter[&"ab"], 1);
     }
-    
+
     #[test]
     fn test_get_ngram_long() {
         let counter = get_ngram_counter("aabc", 4);
