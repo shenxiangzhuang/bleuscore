@@ -2,7 +2,7 @@ import random
 import time
 
 from typing import Tuple, List
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 import bleuscore
@@ -32,6 +32,7 @@ def build_translation_pair(text: str, n: int = 10) -> Tuple[List[str], List[List
     return predictions, references
 
 
+@settings(max_examples=100)
 @given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126),
                min_size=10, max_size=20))
 def test_bleu(input_text):
@@ -55,5 +56,6 @@ def test_bleu(input_text):
         print(rust_result)
         rust_result = rust_result.get("bleu")
     t2 = time.time()
-    print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
+    # print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
+    print(py_result, rust_result, abs(py_result - rust_result))
     assert abs(py_result - rust_result) < 1e-10
