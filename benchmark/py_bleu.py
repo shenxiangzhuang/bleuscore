@@ -72,6 +72,8 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
     tokenizer = Tokenizer13a()
     reference_corpus = [[tokenizer(r) for r in ref] for ref in reference_corpus]
     translation_corpus = [tokenizer(p) for p in translation_corpus]
+    # print(f"translation_corpus: {translation_corpus}\n"
+    #       f"reference_corpus: {reference_corpus}")
 
     for (references, translation) in zip(reference_corpus,
                                          translation_corpus):
@@ -121,5 +123,5 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
 
 
 if __name__ == "__main__":
-    res = compute_bleu(reference_corpus=[["Hello"]], translation_corpus=["Yellow"], max_order=4, smooth=True)
+    res = compute_bleu(reference_corpus=[["Hello, World!"]], translation_corpus=["Yellow, World!"], max_order=4, smooth=True)
     print(res)

@@ -53,9 +53,9 @@ def test_bleu(input_text):
                                              translation_corpus=predictions,
                                              max_order=max_order,
                                              smooth=smooth)
-        print(rust_result)
+        # print(rust_result)
         rust_result = rust_result.get("bleu")
     t2 = time.time()
-    # print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
+    print(t1 - t0, t2 - t1, (t1 - t0) > (t2 - t1))
     print(py_result, rust_result, abs(py_result - rust_result))
     assert abs(py_result - rust_result) < 1e-10
