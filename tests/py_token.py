@@ -104,5 +104,3 @@ class Tokenizer13a(BaseTokenizer):
 if __name__ == "__main__":
     tokenizer = Tokenizer13a()
     print(tokenizer("Hello\n-\n, &quot;World!<skipped>"))
-    
-    

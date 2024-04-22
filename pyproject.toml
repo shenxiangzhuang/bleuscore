@@ -37,7 +37,7 @@ Homepage = 'https://github.com/shenxiangzhuang/bleuscore'
 Source = 'https://github.com/shenxiangzhuang/bleuscore'
 
 [project.optional-dependencies]
-test = ["pytest", "hypothesis", "evaluate"]
+test = ["pytest", "pytest-sugar", "hypothesis", "evaluate"]
 lint = ["black", "ruff~=0.3.7"]
 #docs = []
 #dev = []

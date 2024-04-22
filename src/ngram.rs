@@ -11,7 +11,8 @@ pub fn get_token_ngram_counter(tokens: &Vec<String>,
     let mut count_map: HashMap<(String, usize), usize> = HashMap::new();
     for order in 1..=max_order {
         for start_index in 0..(tokens.len().saturating_sub(order - 1)) {
-            let ngram = tokens[start_index..(start_index + order)].join("");
+            // note: can not join with "", which will make 2-gram ('000', '00') = ('0000', '0')
+            let ngram = tokens[start_index..(start_index + order)].join(" ");
             count_map.entry((ngram, order))
                      .and_modify(|counter| *counter += 1)
                      .or_insert(1);
@@ -47,7 +48,7 @@ mod test {
         let counter = get_token_ngram_counter(&tokens,4);
         assert_eq!(counter[&("a".to_string(), 1)], 1);
         assert_eq!(counter[&("b".to_string(), 1)], 1);
-        assert_eq!(counter[&("ab".to_string(), 2)], 1);
+        assert_eq!(counter[&("a b".to_string(), 2)], 1);
     }
 
     #[test]
@@ -63,14 +64,14 @@ mod test {
         assert_eq!(counter[&("c".to_string(), 1)], 1);
         assert_eq!(counter.get(&("d".to_string(), 1)), None);
 
-        assert_eq!(counter[&("aa".to_string(), 2)], 1);
-        assert_eq!(counter[&("ab".to_string(), 2)], 1);
-        assert_eq!(counter[&("bc".to_string(), 2)], 1);
-        assert_eq!(counter.get(&("ac".to_string(), 2)), None);
+        assert_eq!(counter[&("a a".to_string(), 2)], 1);
+        assert_eq!(counter[&("a b".to_string(), 2)], 1);
+        assert_eq!(counter[&("b c".to_string(), 2)], 1);
+        assert_eq!(counter.get(&("a c".to_string(), 2)), None);
 
-        assert_eq!(counter[&("aab".to_string(), 3)], 1);
-        assert_eq!(counter[&("abc".to_string(), 3)], 1);
-        assert_eq!(counter[&("aabc".to_string(), 4)], 1);
+        assert_eq!(counter[&("a a b".to_string(), 3)], 1);
+        assert_eq!(counter[&("a b c".to_string(), 3)], 1);
+        assert_eq!(counter[&("a a b c".to_string(), 4)], 1);
 
         assert_eq!(counter.len(), 9);
     }

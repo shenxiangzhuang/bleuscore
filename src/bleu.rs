@@ -8,35 +8,35 @@ use crate::tokenizer::{Tokenizer, Tokenizer13a};
 pub struct BleuScore {
     pub bleu: f64,
     pub precisions: Vec<f64>,
-    pub bp: f64,
-    pub ratio: f64,
+    pub brevity_penalty: f64,
+    pub length_ratio: f64,
     pub translation_length: usize,
     pub reference_length: usize,
 }
 
 
 pub fn bleu_score(
-    reference_corpus: Vec<Vec<String>>,
-    translation_corpus: Vec<String>,
+    references: Vec<Vec<String>>,
+    predictions: Vec<String>,
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
     // init
     let mut matches_by_order: Vec<usize> = vec![0; max_order];
     let mut possible_matches_by_order: Vec<usize> = vec![0; max_order];
-    let mut references_length: usize = 0;
+    let mut reference_length: usize = 0;
     let mut translation_length: usize = 0;
     let tokenizer = Tokenizer13a::new();
     
     for (references, translation) in 
-        reference_corpus.iter().zip(translation_corpus.iter()) {
+        references.iter().zip(predictions.iter()) {
         // tokenize
         let translation_tokens = tokenizer.tokenize(translation);
         let references_tokens: Vec<Vec<String>> = references.iter()
                                                             .map(|x| tokenizer.tokenize(x))
                                                             .collect();
         // lengths
-        references_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
+        reference_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
         translation_length += translation_tokens.len();
         
         // ngram count
@@ -103,13 +103,13 @@ pub fn bleu_score(
         geo_mean = p_log_sum.exp();
     }
 
-    let ratio: f64 = translation_length as f64 / references_length as f64;
-    let mut bp = 1.0;
-    if ratio <= 1.0 {
-        bp = (1.0 - 1.0 / ratio).exp();
+    let length_ratio: f64 = translation_length as f64 / reference_length as f64;
+    let mut brevity_penalty = 1.0;
+    if length_ratio <= 1.0 {
+        brevity_penalty = (1.0 - 1.0 / length_ratio).exp();
     }
-    let bleu = geo_mean * bp;
-    BleuScore{bleu, precisions, bp, ratio, translation_length, reference_length: references_length}
+    let bleu = geo_mean * brevity_penalty;
+    BleuScore{bleu, precisions, brevity_penalty, length_ratio, translation_length, reference_length}
 }
 
 

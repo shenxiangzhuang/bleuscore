@@ -24,17 +24,18 @@ fn tokenizer_13a(line: &str) -> PyResult<Vec<String>> {
 
 #[pyfunction]
 fn compute_bleu(
-    reference_corpus: Vec<Vec<String>>,
-    translation_corpus: Vec<String>,
+    references: Vec<Vec<String>>,
+    predictions: Vec<String>,
     max_order: usize,
-    smooth: bool, ) -> PyResult<PyObject> {
-    let bleu = bleu::bleu_score(reference_corpus, translation_corpus, max_order, smooth);
+    smooth: bool,
+) -> PyResult<PyObject> {
+    let bleu = bleu::bleu_score(references, predictions, max_order, smooth);
     Python::with_gil(|py| {
         let bleu_dict = [
             ("bleu", bleu.bleu.to_object(py)), 
             ("precisions", bleu.precisions.to_object(py)),
-            ("bp", bleu.bp.to_object(py)),
-            ("ratio", bleu.ratio.to_object(py)),
+            ("brevity_penalty", bleu.brevity_penalty.to_object(py)),
+            ("length_ratio", bleu.length_ratio.to_object(py)),
             ("translation_length", bleu.translation_length.to_object(py)),
             ("reference_length", bleu.reference_length.to_object(py)),
         ].into_py_dict_bound(py);
