@@ -15,7 +15,7 @@ pub struct BleuScore {
 }
 
 
-pub fn compute_bleu(
+pub fn bleu_score(
     reference_corpus: Vec<Vec<String>>,
     translation_corpus: Vec<String>,
     max_order: usize,
@@ -34,7 +34,7 @@ pub fn compute_bleu(
         // tokenize
         let translation_tokens = tokenizer.tokenize(translation);
         let references_tokens: Vec<Vec<String>> = references.iter().map(|x| tokenizer.tokenize(x)).collect();
-        // println!("translation_tokens: {:?}\nreferences_tokens: {:?}", translation_tokens, references_tokens);
+        // println!("translation_tokens: {:?}\n references_tokens: {:?}", translation_tokens, references_tokens);
 
         references_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
         translation_length += translation_tokens.len();
@@ -111,14 +111,14 @@ pub fn compute_bleu(
 
 #[cfg(test)]
 mod test {
-    use crate::bleu::{compute_bleu};
+    use crate::bleu::{bleu_score};
     #[test]
     fn test_bleu() {
         let reference_corpus: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
         let translation_corpus: Vec<String> = vec!["Yellow, World!".to_string()];
         let max_order: usize = 4;
         let smooth: bool = true;
-        let res = compute_bleu(reference_corpus, translation_corpus, max_order, smooth);
+        let res = bleu_score(reference_corpus, translation_corpus, max_order, smooth);
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("BLEU: {:?}", res);
         assert_eq!((res.bleu - 0.668740304976422).abs() < 1e-10, true);

@@ -1,10 +1,9 @@
-/// ref: https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py
 use cached::proc_macro::cached;
 use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
-    static ref REGEX_ARRAY: [(Regex, &'static str); 4] = [
+    pub static ref REGEX_ARRAY: [(Regex, &'static str); 4] = [
         (Regex::new(r"([\{-\~\[-\` -\&\(-\+\:-\@\/])").unwrap(),  r" $1 "),
         (Regex::new(r"([^0-9])([\.,])").unwrap(), r"$1 $2 "),
         (Regex::new(r"([\.,])([^0-9])").unwrap(), r" $1 $2"),
@@ -21,10 +20,10 @@ pub trait Tokenizer {
 
 #[derive(Debug)]
 pub struct TokenizerRegex {
-    signature: String,
+    pub signature: String,
 }
 
-
+/// The implementation is based on <https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py>
 impl TokenizerRegex {
     pub fn new() -> Self {
         Self {signature: "re".to_string()}
@@ -54,7 +53,7 @@ impl Tokenizer for TokenizerRegex {
 
 #[derive(Debug)]
 pub struct Tokenizer13a {
-    signature: String,
+    pub signature: String,
 }
 
 
