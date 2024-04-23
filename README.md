@@ -48,4 +48,4 @@ print(results)
 ## Benchmark
 
 ### Simple
-<iframe src="https://app.warp.dev/block/embed/3XYPlpU0xtBpnqsVO1zujt" title="bleuscore vs huggingface evaluate" style="width: 1252px; height: 454px; border:0; overflow:hidden;" allow="clipboard-read; clipboard-write"></iframe>
+![img.png](asset/benchmark/simple.png)
