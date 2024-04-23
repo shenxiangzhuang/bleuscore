@@ -60,6 +60,7 @@ fn tokenizer_13a(line: &str) -> PyResult<Vec<String>> {
 }
 
 #[pyfunction]
+#[pyo3(signature = (references, predictions, max_order=4, smooth=false))]
 fn compute(
     references: Vec<Vec<String>>,
     predictions: Vec<String>,
