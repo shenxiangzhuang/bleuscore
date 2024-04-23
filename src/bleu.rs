@@ -1,8 +1,7 @@
+use crate::ngram::get_token_ngram_counter;
+use crate::tokenizer::{Tokenizer, Tokenizer13a};
 use std::cmp::min;
 use std::collections::HashMap;
-use crate::ngram::{get_token_ngram_counter};
-use crate::tokenizer::{Tokenizer, Tokenizer13a};
-
 
 /// The BLEU score data struct
 #[derive(Debug, Default)]
@@ -28,44 +27,44 @@ pub fn compute_score(
     let mut reference_length: usize = 0;
     let mut translation_length: usize = 0;
     let tokenizer = Tokenizer13a::new();
-    
-    for (references, translation) in 
-        references.iter().zip(predictions.iter()) {
+
+    for (references, translation) in references.iter().zip(predictions.iter()) {
         // tokenize
         let translation_tokens = tokenizer.tokenize(translation);
-        let references_tokens: Vec<Vec<String>> = references.iter()
-                                                            .map(|x| tokenizer.tokenize(x))
-                                                            .collect();
+        let references_tokens: Vec<Vec<String>> =
+            references.iter().map(|x| tokenizer.tokenize(x)).collect();
         // lengths
         reference_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
         translation_length += translation_tokens.len();
-        
+
         // ngram count
         let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
         let mut merged_ref_ngram_counts = HashMap::new();
         for reference_tokens in references_tokens {
             let reference_ngram_counts = get_token_ngram_counter(&reference_tokens, max_order);
             for (key, value) in reference_ngram_counts {
-                merged_ref_ngram_counts.entry(key).and_modify(|v| *v += value).or_insert(value);
+                merged_ref_ngram_counts
+                    .entry(key)
+                    .and_modify(|v| *v += value)
+                    .or_insert(value);
             }
         }
-        
+
         // overlap count
         let mut overlap_counts = HashMap::new();
         for (k, v) in translation_ngram_counts {
             let key = k.clone();
             if merged_ref_ngram_counts.contains_key(&key) {
                 overlap_counts.insert(k, min(merged_ref_ngram_counts[&key], v));
-            }
-            else { 
-                continue
+            } else {
+                continue;
             }
         }
         for key in overlap_counts.keys() {
             let (_, order) = key;
             matches_by_order[order - 1] += overlap_counts[&key];
         }
-        
+
         // possible match
         for order in 1..=max_order {
             let possible_matches = translation_tokens.len().saturating_sub(order - 1);
@@ -74,33 +73,31 @@ pub fn compute_score(
             }
         }
     }
-    
+
     // precisions calculation
-    let mut precisions:Vec<f64> = vec![0.0; max_order];
+    let mut precisions: Vec<f64> = vec![0.0; max_order];
     for i in 0..max_order {
         match smooth {
             true => {
-                precisions[i] = (matches_by_order[i] as f64 + 1.0) / 
-                    (possible_matches_by_order[i] as f64 + 1.0);
-            },
+                precisions[i] = (matches_by_order[i] as f64 + 1.0)
+                    / (possible_matches_by_order[i] as f64 + 1.0);
+            }
             false => {
                 if possible_matches_by_order[i] > 0 {
-                    precisions[i] = (matches_by_order[i] as f64) / 
-                        (possible_matches_by_order[i] as f64)
-                }
-                else { 
+                    precisions[i] =
+                        (matches_by_order[i] as f64) / (possible_matches_by_order[i] as f64)
+                } else {
                     precisions[i] = 0.0;
                 }
             }
         }
     }
-    
+
     let mut geo_mean = 0.0;
-    
+
     if precisions.iter().fold(f64::INFINITY, |a, &b| a.min(b)) > 0.0 {
-        let p_log_sum: f64 = (1.0 / max_order as f64) * precisions.iter()
-                                                                  .map(|&x| x.ln())
-                                                                  .sum::<f64>();
+        let p_log_sum: f64 =
+            (1.0 / max_order as f64) * precisions.iter().map(|&x| x.ln()).sum::<f64>();
         geo_mean = p_log_sum.exp();
     }
 
@@ -110,13 +107,19 @@ pub fn compute_score(
         brevity_penalty = (1.0 - 1.0 / length_ratio).exp();
     }
     let bleu = geo_mean * brevity_penalty;
-    BleuScore{bleu, precisions, brevity_penalty, length_ratio, translation_length, reference_length}
+    BleuScore {
+        bleu,
+        precisions,
+        brevity_penalty,
+        length_ratio,
+        translation_length,
+        reference_length,
+    }
 }
-
 
 #[cfg(test)]
 mod test {
-    use crate::bleu::{compute_score};
+    use crate::bleu::compute_score;
     #[test]
     fn test_bleu() {
         let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];

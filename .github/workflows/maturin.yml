@@ -61,6 +61,7 @@ jobs:
           pip install bleuscore --find-links dist --force-reinstall
           pip install pytest hypothesis evaluate
           pytest --hypothesis-show-statistics tests
+
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
         uses: uraimo/run-on-arch-action@v2.5.0

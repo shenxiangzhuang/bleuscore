@@ -4,13 +4,15 @@ use regex::Regex;
 
 lazy_static! {
     pub static ref REGEX_ARRAY: [(Regex, &'static str); 4] = [
-        (Regex::new(r"([\{-\~\[-\` -\&\(-\+\:-\@\/])").unwrap(),  r" $1 "),
+        (
+            Regex::new(r"([\{-\~\[-\` -\&\(-\+\:-\@\/])").unwrap(),
+            r" $1 "
+        ),
         (Regex::new(r"([^0-9])([\.,])").unwrap(), r"$1 $2 "),
         (Regex::new(r"([\.,])([^0-9])").unwrap(), r" $1 $2"),
         (Regex::new(r"([0-9])(-)").unwrap(), r"$1 $2 "),
     ];
 }
-
 
 /// tokenize function is used to tokenize the strings
 pub trait Tokenizer {
@@ -26,10 +28,11 @@ pub struct TokenizerRegex {
 
 impl Default for TokenizerRegex {
     fn default() -> Self {
-        Self {signature: "re".to_string()}
+        Self {
+            signature: "re".to_string(),
+        }
     }
 }
-
 
 impl TokenizerRegex {
     pub fn new() -> Self {
@@ -37,9 +40,8 @@ impl TokenizerRegex {
     }
 }
 
-
-#[cached(size=65536)]
-fn regex_tokenize_cache(line: String) -> Vec<String>  {
+#[cached(size = 65536)]
+fn regex_tokenize_cache(line: String) -> Vec<String> {
     let mut res = line;
     for &(ref re_capture, re_replace) in REGEX_ARRAY.iter() {
         res = re_capture.replace_all(&res, re_replace).to_string();
@@ -56,7 +58,6 @@ impl Tokenizer for TokenizerRegex {
     }
 }
 
-
 /// Same implementation with [huggingface/sacrebleu](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py)
 #[derive(Debug)]
 pub struct Tokenizer13a {
@@ -65,7 +66,9 @@ pub struct Tokenizer13a {
 
 impl Default for Tokenizer13a {
     fn default() -> Self {
-        Self {signature: "13a".to_string()}
+        Self {
+            signature: "13a".to_string(),
+        }
     }
 }
 
@@ -75,18 +78,19 @@ impl Tokenizer13a {
     }
 }
 
-
-#[cached(size=65536)]
-fn tokenize_13a_cache(line: String) -> Vec<String>  {
+#[cached(size = 65536)]
+fn tokenize_13a_cache(line: String) -> Vec<String> {
     let mut res = line;
-    res = res.replace("<skipped>", "")
-             .replace("-\n", "")
-             .replace('\n', " ");
+    res = res
+        .replace("<skipped>", "")
+        .replace("-\n", "")
+        .replace('\n', " ");
     if res.contains('&') {
-        res = res.replace("&quot;", "\"")
-                 .replace("&amp;", "&")
-                 .replace("&lt;", "<")
-                 .replace("&gt;", ">");
+        res = res
+            .replace("&quot;", "\"")
+            .replace("&amp;", "&")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">");
     }
     TokenizerRegex::new().tokenize(&format!(" {res} "))
 }
@@ -100,8 +104,6 @@ impl Tokenizer for Tokenizer13a {
     }
 }
 
-
-
 #[cfg(test)]
 mod test {
     use crate::tokenizer;
@@ -113,11 +115,15 @@ mod test {
         let mut line = "Hello, World!";
         let mut res = tokenizer_regex.tokenize(line);
         assert_eq!(res, vec!["Hello", ",", "World", "!"]);
-        
+
         line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
         res = tokenizer_regex.tokenize(line);
-        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail", 
-                             "-", "0", "errors", ",", "12", "warnings"])
+        assert_eq!(
+            res,
+            vec![
+                "/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"
+            ]
+        )
     }
 
     #[test]
@@ -129,7 +135,11 @@ mod test {
 
         line = "/usr/sbin/sendmail - 0 errors, 12 warnings";
         res = tokenizer_regex.tokenize(line);
-        assert_eq!(res, vec!["/", "usr", "/", "sbin", "/", "sendmail",
-                             "-", "0", "errors", ",", "12", "warnings"])
+        assert_eq!(
+            res,
+            vec![
+                "/", "usr", "/", "sbin", "/", "sendmail", "-", "0", "errors", ",", "12", "warnings"
+            ]
+        )
     }
 }
