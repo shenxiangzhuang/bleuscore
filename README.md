@@ -44,3 +44,8 @@ print(results)
 # 'length_ratio': 1.1666666666666667, 'translation_length': 7, 'reference_length': 6}
 
 ```
+
+## Benchmark
+
+### Simple
+![img.png](asset/benchmark/simple.png)
