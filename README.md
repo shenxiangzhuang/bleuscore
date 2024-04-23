@@ -7,7 +7,7 @@ is a fast(maybe:) bleu score calculator base on Rust.
 ## Quick Start
 The usage is exactly same with [huggingface evaluate](https://huggingface.co/spaces/evaluate-metric/bleu):
 
-```python
+```diff
 - import evaluate
 + import bleuscore
 
