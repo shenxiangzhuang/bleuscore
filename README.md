@@ -68,20 +68,29 @@ The `N` is used to enlarge the predictions/references size by simply duplication
 We can see that as `N` increase, the bleuscore gets better performance.
 
 ### N=1
-![img.png](asset/benchmark/n_1.png)
+
+<div style="text-align: center;">
+    <img width="80%" src="asset/benchmark/n_1.png">
+</div>
 
 ### N=100
 We will only test the bleuscore and evaluate **local** results from here, 
 because the other two methods are too slow to test quickly.
 
-![img.png](asset/benchmark/n_100.png)
+<div style="text-align: center;">
+    <img width="80%" src="asset/benchmark/n_100.png">
+</div>
 
 ### N=10,000
-![img.png](asset/benchmark/n_10000.png)
+
+<div style="text-align: center;">
+    <img width="80%" src="asset/benchmark/n_10000.png">
+</div>
 
 ### N=100,000
-![img.png](asset/benchmark/n_100000.png)
 
-
+<div style="text-align: center;">
+    <img width="80%" src="asset/benchmark/n_100000.png">
+</div>
 
 
