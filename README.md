@@ -8,7 +8,7 @@
 
 
 [`bleuscore`](https://github.com/shenxiangzhuang/bleuscore)
-is a fast BLEU score calculator written in rust.
+is a fast(not yet :) BLEU score calculator written in rust.
 
 ## Installation
 The python package has been published to [pypi](https://pypi.org/project/bleuscore/),
@@ -58,10 +58,14 @@ print(results)
 We use the demo data shown in quick start to do this simple benchmark.
 You can check the [benchmark/simple](./benchmark/simple) for the benchmark source code.
 
+- Benchmark1: bleuscore
+- Benchmark2: sacrebleu
+  - Note that we got different result with sacrebleu in the simple demo data and all the rests have same result
+- Benchmark3: huggingface evaluate bleu algorithm in **local**
+- Benchmark4: huggingface evaluate bleu algorithm with **evaluate** package
+
+
 [//]: # (https://app.warp.dev/block/Mt8BOS3rllMuryMkcI4Gr5)
 ![img.png](asset/benchmark/simple.png)
 
-
-Note that bleuscore gets same result with huggingface evaluate, but sacrebleu gets different result.
-(The reason maybe related to the implementation details in sacrebleu)
 
