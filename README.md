@@ -53,19 +53,35 @@ print(results)
 ```
 
 ## Benchmark
-
-### Simple
 We use the demo data shown in quick start to do this simple benchmark.
 You can check the [benchmark/simple](./benchmark/simple) for the benchmark source code.
 
 - Benchmark1: bleuscore
-- Benchmark2: sacrebleu
+- Benchmark2: huggingface evaluate bleu algorithm in **local**
+- Benchmark3: sacrebleu
   - Note that we got different result with sacrebleu in the simple demo data and all the rests have same result
-- Benchmark3: huggingface evaluate bleu algorithm in **local**
 - Benchmark4: huggingface evaluate bleu algorithm with **evaluate** package
 
 
-[//]: # (https://app.warp.dev/block/Mt8BOS3rllMuryMkcI4Gr5)
-![img.png](asset/benchmark/simple.png)
+The `N` is used to enlarge the predictions/references size by simply duplication the demo data as shown before.
+
+We can see that as `N` increase, the bleuscore gets better performance.
+
+### N=1
+![img.png](asset/benchmark/n_1.png)
+
+### N=100
+We will only test the bleuscore and evaluate **local** results from here, 
+because the other two methods are too slow to test quickly.
+
+![img.png](asset/benchmark/n_100.png)
+
+### N=10,000
+![img.png](asset/benchmark/n_10000.png)
+
+### N=100,000
+![img.png](asset/benchmark/n_100000.png)
+
+
 
 

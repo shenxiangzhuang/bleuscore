@@ -1,10 +1,8 @@
 import evaluate
 
-predictions = ["hello there general kenobi", "foo bar foobar"]
-references = [
-    ["hello there general kenobi", "hello there !"],
-    ["foo bar foobar"]
-]
+from simulation_data import predictions, references
 
-bleu = evaluate.load("bleu")
-results = bleu.compute(predictions=predictions, references=references)
+
+if __name__ == "__main__":
+    bleu = evaluate.load("bleu")
+    results = bleu.compute(predictions=predictions, references=references)
