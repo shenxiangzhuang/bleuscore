@@ -8,7 +8,8 @@ is a fast(maybe:) bleu score calculator base on Rust.
 The usage is exactly same with [huggingface evaluate](https://huggingface.co/spaces/evaluate-metric/bleu):
 
 ```python
-import bleuscore
+- import evaluate
++ import bleuscore
 
 predictions = ["hello there general kenobi", "foo bar foobar"]
 references = [
