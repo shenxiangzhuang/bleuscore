@@ -14,7 +14,8 @@ pub struct BleuScore {
     pub reference_length: usize,
 }
 
-/// compute the BLEU score with `Tokenizer13a` as default tokenizer
+/// compute the BLEU score with `Tokenizer13a` as default tokenizer.
+/// The implementation is based on [huggingface/nmt](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/bleu.py)
 pub fn compute_score(
     references: Vec<Vec<String>>,
     predictions: Vec<String>,
