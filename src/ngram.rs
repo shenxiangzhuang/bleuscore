@@ -4,7 +4,7 @@ use counter::Counter;
 
 /// Here the tokens' type is `&[String]` rather than `&Vec<String>`
 /// to fix `clippy::not_unsafe_ptr_arg_deref` error.
-pub fn get_token_ngram_counter(tokens: &Vec<String>, 
+pub fn get_token_ngram_counter(tokens: &[String], 
                                max_order: usize,
                               ) -> HashMap<(String, usize), usize> 
 {
