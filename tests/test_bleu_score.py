@@ -1,5 +1,4 @@
 import datetime
-from typing import List
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -23,11 +22,11 @@ def local_py_bleu_result_compare(references, predictions, max_order, smooth):
 
     # same order with py_result, but here return a dict rather than list
     # bleu, precisions, bp, ratio, translation_length, reference_length
-    rust_result = bleuscore.compute_bleu(references=references,
-                                         predictions=predictions,
-                                         max_order=max_order,
-                                         smooth=smooth,
-                                         )
+    rust_result = bleuscore.compute(references=references,
+                                    predictions=predictions,
+                                    max_order=max_order,
+                                    smooth=smooth,
+                                    )
 
     for i, py_precision in enumerate(py_precisions):
         assert number_close(py_precision, rust_result["precisions"][i])
@@ -89,11 +88,11 @@ def hf_bleu_result_compare(references, predictions, max_order, smooth, debug=Fal
                                 max_order=max_order,
                                 smooth=smooth)
 
-    bleuscore_result = bleuscore.compute_bleu(references=references,
-                                              predictions=predictions,
-                                              max_order=max_order,
-                                              smooth=smooth,
-                                              )
+    bleuscore_result = bleuscore.compute(references=references,
+                                         predictions=predictions,
+                                         max_order=max_order,
+                                         smooth=smooth,
+                                         )
     if debug:
         print(f"hf_result: {hf_result}\n"
               f"bleuscore_result: {bleuscore_result}")

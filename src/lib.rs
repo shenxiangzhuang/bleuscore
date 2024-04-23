@@ -2,7 +2,7 @@ mod tokenizer;
 pub use crate::tokenizer::{Tokenizer, Tokenizer13a, TokenizerRegex};
 mod ngram;
 mod bleu;
-pub use crate::bleu::{BleuScore, bleu_score};
+pub use crate::bleu::{BleuScore, compute_score};
 
 use pyo3::prelude::*;
 use pyo3::types::IntoPyDict;
@@ -23,13 +23,13 @@ fn tokenizer_13a(line: &str) -> PyResult<Vec<String>> {
 }
 
 #[pyfunction]
-fn compute_bleu(
+fn compute(
     references: Vec<Vec<String>>,
     predictions: Vec<String>,
     max_order: usize,
     smooth: bool,
 ) -> PyResult<PyObject> {
-    let bleu = bleu::bleu_score(references, predictions, max_order, smooth);
+    let bleu = compute_score(references, predictions, max_order, smooth);
     Python::with_gil(|py| {
         let bleu_dict = [
             ("bleu", bleu.bleu.to_object(py)), 
@@ -50,6 +50,6 @@ fn compute_bleu(
 fn bleuscore(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(tokenizer_regex, m)?)?;
     m.add_function(wrap_pyfunction!(tokenizer_13a, m)?)?;
-    m.add_function(wrap_pyfunction!(compute_bleu, m)?)?;
+    m.add_function(wrap_pyfunction!(compute, m)?)?;
     Ok(())
 }
