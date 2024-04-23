@@ -78,6 +78,13 @@ jobs:
             pip3 install pytest hypothesis evaluate
             pytest --hypothesis-show-statistics tests
 
+      - name: Upload coverage reports to Codecov
+        if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: shenxiangzhuang/bleuscore
+
   windows:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
