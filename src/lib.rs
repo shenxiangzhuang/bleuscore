@@ -51,5 +51,6 @@ fn bleuscore(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(tokenizer_regex, m)?)?;
     m.add_function(wrap_pyfunction!(tokenizer_13a, m)?)?;
     m.add_function(wrap_pyfunction!(compute, m)?)?;
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }
