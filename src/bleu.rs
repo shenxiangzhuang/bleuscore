@@ -4,6 +4,7 @@ use crate::ngram::{get_token_ngram_counter};
 use crate::tokenizer::{Tokenizer, Tokenizer13a};
 
 
+/// The BLEU score data struct
 #[derive(Debug, Default)]
 pub struct BleuScore {
     pub bleu: f64,
@@ -14,7 +15,7 @@ pub struct BleuScore {
     pub reference_length: usize,
 }
 
-
+/// compute the BLEU score with `Tokenizer13a` as default tokenizer
 pub fn compute_score(
     references: Vec<Vec<String>>,
     predictions: Vec<String>,
@@ -118,13 +119,13 @@ mod test {
     use crate::bleu::{compute_score};
     #[test]
     fn test_bleu() {
-        let reference_corpus: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
-        let translation_corpus: Vec<String> = vec!["Yellow, World!".to_string()];
+        let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
+        let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
         let max_order: usize = 4;
         let smooth: bool = true;
-        let res = compute_score(reference_corpus, translation_corpus, max_order, smooth);
+        let res = compute_score(references, predictions, max_order, smooth);
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
-        println!("BLEU: {:?}", res);
+        println!("result: {:?}", res);
         assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
     }
 }

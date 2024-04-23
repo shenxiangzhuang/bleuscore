@@ -12,14 +12,13 @@ lazy_static! {
 }
 
 
+/// tokenize function is used to tokenize the strings
 pub trait Tokenizer {
     fn signature(&self) -> &str;
     fn tokenize(&self, line: &str) -> Vec<String>;
 }
 
-
-/// The implementation is based on 
-/// <https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py>
+/// Same implementation with [huggingface/sacrebleu](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py)
 #[derive(Debug)]
 pub struct TokenizerRegex {
     pub signature: String,
@@ -58,7 +57,7 @@ impl Tokenizer for TokenizerRegex {
 }
 
 
-
+/// Same implementation with [huggingface/sacrebleu](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/tokenizer_13a.py)
 #[derive(Debug)]
 pub struct Tokenizer13a {
     pub signature: String,
