@@ -1,9 +1,7 @@
 import bleuscore
 
-predictions = ["hello there general kenobi", "foo bar foobar"]
-references = [
-    ["hello there general kenobi", "hello there !"],
-    ["foo bar foobar"]
-]
+from simulation_data import predictions, references
 
-results = bleuscore.compute(predictions=predictions, references=references)
+
+if __name__ == "__main__":
+    results = bleuscore.compute(predictions=predictions, references=references)

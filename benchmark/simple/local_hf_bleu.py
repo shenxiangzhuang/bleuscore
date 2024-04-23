@@ -224,11 +224,7 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
 
 
 if __name__ == "__main__":
-    predictions = ["hello there general kenobi", "foo bar foobar"]
-    references = [
-        ["hello there general kenobi", "hello there !"],
-        ["foo bar foobar"]
-    ]
+    from simulation_data import predictions, references
 
     results = compute_bleu(
         reference_corpus=references,

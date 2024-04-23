@@ -1,11 +1,8 @@
 from sacrebleu.metrics import BLEU
 
+from simulation_data import predictions, references
 
-predictions = ["hello there general kenobi", "foo bar foobar"]
-references = [
-    ["hello there general kenobi", "hello there !"],
-    ["foo bar foobar"]
-]
 
-bleu = BLEU(smooth_method="none", max_ngram_order=4, tokenize='13a')
-results = bleu.corpus_score(predictions, references)
+if __name__ == "__main__":
+    bleu = BLEU(smooth_method="none", max_ngram_order=4, tokenize='13a')
+    results = bleu.corpus_score(predictions, references)
