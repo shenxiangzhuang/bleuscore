@@ -44,3 +44,8 @@ print(results)
 # 'length_ratio': 1.1666666666666667, 'translation_length': 7, 'reference_length': 6}
 
 ```
+
+## Benchmark
+
+### Simple
+<iframe src="https://app.warp.dev/block/embed/3XYPlpU0xtBpnqsVO1zujt" title="bleuscore vs huggingface evaluate" style="width: 1252px; height: 454px; border:0; overflow:hidden;" allow="clipboard-read; clipboard-write"></iframe>
