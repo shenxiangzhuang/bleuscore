@@ -1,7 +1,14 @@
 # bleuscore
 
+[![codecov](https://codecov.io/gh/shenxiangzhuang/bleuscore/graph/badge.svg?token=ckgU5oGbxf)](https://codecov.io/gh/shenxiangzhuang/bleuscore)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/bleuscore)](https://crates.io/crates/bleuscore)
+[![PyPI - Version](https://img.shields.io/pypi/v/bleuscore)](https://pypi.org/project/bleuscore/)
+![docs.rs](https://img.shields.io/docsrs/bleuscore)
+
+
 [`bleuscore`](https://github.com/shenxiangzhuang/bleuscore)
-is a fast(maybe:) bleu score calculator base on Rust.
+is a fast BLEU score calculator written in rust.
 
 ## Installation
 The python package has been published to [pypi](https://pypi.org/project/bleuscore/),
