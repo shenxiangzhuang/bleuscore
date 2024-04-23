@@ -7,7 +7,7 @@ is a fast(maybe:) bleu score calculator base on Rust.
 The python package has been published to [pypi](https://pypi.org/project/bleuscore/),
 so we can install it directly with many ways: 
 
-- `pip`:
+- `pip`
     ```bash
     pip install bleuscore
     ```
