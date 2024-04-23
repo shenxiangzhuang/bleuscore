@@ -15,7 +15,7 @@ pub struct BleuScore {
 }
 
 
-pub fn bleu_score(
+pub fn compute_score(
     references: Vec<Vec<String>>,
     predictions: Vec<String>,
     max_order: usize,
@@ -115,14 +115,14 @@ pub fn bleu_score(
 
 #[cfg(test)]
 mod test {
-    use crate::bleu::{bleu_score};
+    use crate::bleu::{compute_score};
     #[test]
     fn test_bleu() {
         let reference_corpus: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
         let translation_corpus: Vec<String> = vec!["Yellow, World!".to_string()];
         let max_order: usize = 4;
         let smooth: bool = true;
-        let res = bleu_score(reference_corpus, translation_corpus, max_order, smooth);
+        let res = compute_score(reference_corpus, translation_corpus, max_order, smooth);
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("BLEU: {:?}", res);
         assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
