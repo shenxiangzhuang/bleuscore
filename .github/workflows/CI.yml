@@ -60,7 +60,7 @@ jobs:
           set -e
           pip install bleuscore --find-links dist --force-reinstall
           pip install pytest hypothesis evaluate
-          pytest
+          pytest --hypothesis-show-statistics tests
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
         uses: uraimo/run-on-arch-action@v2.5.0
@@ -76,7 +76,7 @@ jobs:
             set -e
             pip3 install bleuscore --find-links dist --force-reinstall
             pip3 install pytest hypothesis evaluate
-            pytest
+            pytest --hypothesis-show-statistics tests
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -111,7 +111,8 @@ jobs:
           set -e
           pip install bleuscore --find-links dist --force-reinstall
           pip install pytest hypothesis evaluate
-          pytest
+          pytest --hypothesis-show-statistics tests
+
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -145,7 +146,8 @@ jobs:
           set -e
           pip install bleuscore --find-links dist --force-reinstall
           pip install pytest hypothesis evaluate
-          pytest
+          pytest --hypothesis-show-statistics tests
+
 
   sdist:
     runs-on: ubuntu-latest
