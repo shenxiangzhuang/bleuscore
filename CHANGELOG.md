@@ -10,6 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Upgrade `cached` version to `0.50.0`
 Change crate-type to `["cdylib", "rlib"]`
-
 ## [0.1.0] - 2024-04-23
 - BLEU score calculation with `Tokenizer13a` as default tokenizer.
