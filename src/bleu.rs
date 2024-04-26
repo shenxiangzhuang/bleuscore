@@ -41,8 +41,8 @@ pub fn compute_score(
         // ngram count
         let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
         let mut merged_ref_ngram_counts = HashMap::new();
-        for reference_tokens in references_tokens {
-            let reference_ngram_counts = get_token_ngram_counter(&reference_tokens, max_order);
+        for reference_tokens in references_tokens.iter() {
+            let reference_ngram_counts = get_token_ngram_counter(reference_tokens, max_order);
             for (key, value) in reference_ngram_counts {
                 merged_ref_ngram_counts
                     .entry(key)
@@ -54,16 +54,14 @@ pub fn compute_score(
         // overlap count
         let mut overlap_counts = HashMap::new();
         for (k, v) in translation_ngram_counts {
-            let key = k.clone();
-            if merged_ref_ngram_counts.contains_key(&key) {
-                overlap_counts.insert(k, min(merged_ref_ngram_counts[&key], v));
+            if merged_ref_ngram_counts.contains_key(k) {
+                overlap_counts.insert(k, min(merged_ref_ngram_counts[k], v));
             } else {
                 continue;
             }
         }
-        for key in overlap_counts.keys() {
-            let (_, order) = key;
-            matches_by_order[order - 1] += overlap_counts[&key];
+        for &key in overlap_counts.keys() {
+            matches_by_order[key.len() - 1] += overlap_counts[key];
         }
 
         // possible match

@@ -3,17 +3,13 @@ use std::collections::HashMap;
 
 /// Here the tokens' type is `&[String]` rather than `&Vec<String>`
 /// to fix `clippy::not_unsafe_ptr_arg_deref` error.
-pub fn get_token_ngram_counter(
-    tokens: &[String],
-    max_order: usize,
-) -> HashMap<(String, usize), usize> {
-    let mut count_map: HashMap<(String, usize), usize> = HashMap::new();
+pub fn get_token_ngram_counter(tokens: &[String], max_order: usize) -> HashMap<&[String], usize> {
+    let mut count_map: HashMap<&[String], usize> = HashMap::new();
     for order in 1..=max_order {
         for start_index in 0..(tokens.len().saturating_sub(order - 1)) {
-            // note: can not join with "", which will make 2-gram ('000', '00') = ('0000', '0')
-            let ngram = tokens[start_index..(start_index + order)].join(" ");
+            let ngram = &tokens[start_index..(start_index + order)];
             count_map
-                .entry((ngram, order))
+                .entry(ngram)
                 .and_modify(|counter| *counter += 1)
                 .or_insert(1);
         }
@@ -44,9 +40,9 @@ mod test {
     fn test_get_token_ngram_short() {
         let tokens = vec!["a".to_string(), "b".to_string()];
         let counter = get_token_ngram_counter(&tokens, 4);
-        assert_eq!(counter[&("a".to_string(), 1)], 1);
-        assert_eq!(counter[&("b".to_string(), 1)], 1);
-        assert_eq!(counter[&("a b".to_string(), 2)], 1);
+        assert_eq!(counter[&tokens[0..=0]], 1);
+        assert_eq!(counter[&tokens[1..=1]], 1);
+        assert_eq!(counter[&tokens[0..=1]], 1);
     }
 
     #[test]
@@ -59,19 +55,17 @@ mod test {
             "c".to_string(),
         ];
         let counter = get_token_ngram_counter(&tokens, 4);
-        assert_eq!(counter[&("a".to_string(), 1)], 2);
-        assert_eq!(counter[&("b".to_string(), 1)], 1);
-        assert_eq!(counter[&("c".to_string(), 1)], 1);
-        assert_eq!(counter.get(&("d".to_string(), 1)), None);
+        assert_eq!(counter[&tokens[0..=0]], 2); // 'a': 2
+        assert_eq!(counter[&tokens[2..=2]], 1); // 'b': 1
+        assert_eq!(counter[&tokens[3..=3]], 1); // 'c': 1
 
-        assert_eq!(counter[&("a a".to_string(), 2)], 1);
-        assert_eq!(counter[&("a b".to_string(), 2)], 1);
-        assert_eq!(counter[&("b c".to_string(), 2)], 1);
-        assert_eq!(counter.get(&("a c".to_string(), 2)), None);
+        assert_eq!(counter[&tokens[0..=1]], 1); // 'aa': 1
+        assert_eq!(counter[&tokens[1..=2]], 1); // 'ab': 1
+        assert_eq!(counter[&tokens[2..=3]], 1); // 'bc': 1
 
-        assert_eq!(counter[&("a a b".to_string(), 3)], 1);
-        assert_eq!(counter[&("a b c".to_string(), 3)], 1);
-        assert_eq!(counter[&("a a b c".to_string(), 4)], 1);
+        assert_eq!(counter[&tokens[0..=2]], 1); // 'aab': 1
+        assert_eq!(counter[&tokens[1..=3]], 1); // 'abc': 1
+        assert_eq!(counter[&tokens[0..=3]], 1); // 'abcd': 1
 
         assert_eq!(counter.len(), 9);
     }
