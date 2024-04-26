@@ -20,6 +20,8 @@ and [sacrebleu](https://github.com/mjpost/sacrebleu)
 # Basic usage:
 
 ```rust
+use bleuscore::compute_score;
+
 // get the references and prediction data:
 let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
 let predictions: Vec<String> = vec!["Yellow, World!".to_string()];

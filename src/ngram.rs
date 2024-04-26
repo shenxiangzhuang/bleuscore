@@ -43,10 +43,9 @@ mod test {
     fn test_get_token_ngram_short() {
         let tokens = vec!["a".to_string(), "b".to_string()];
         let counter = get_token_ngram_counter(&tokens, 4);
-        let string_slice = &vec!["Hello".to_string(), "World".to_string()];
         assert_eq!(counter[&tokens[0..=0]], 1);
         assert_eq!(counter[&tokens[1..=1]], 1);
-        assert_eq!(counter[&tokens[1..=2]], 1);
+        assert_eq!(counter[&tokens[0..=1]], 1);
     }
 
     #[test]
