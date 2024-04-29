@@ -54,7 +54,7 @@ pub fn compute_score(
         // overlap(matched) count
         for (k, v) in translation_ngram_counts {
             if merged_ref_ngram_counts.contains_key(k) {
-                matches_by_order[k.len() - 1] = min(merged_ref_ngram_counts[k], v)
+                matches_by_order[k.len() - 1] += min(merged_ref_ngram_counts[k], v)
             } else {
                 continue;
             }
