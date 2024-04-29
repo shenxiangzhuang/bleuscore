@@ -95,3 +95,24 @@ mod test {
         assert_eq!(counter[&"aabc"], 1);
     }
 }
+
+
+#[cfg(test)]
+mod benchmark {
+    use std::cmp::max;
+    use test::Bencher;
+    use crate::ngram::{get_ngram_counter, get_token_ngram_counter};
+
+    #[bench]
+    fn bench_ngram(b: &mut Bencher) {
+        let line = "aabc";
+        let max_order = 4;
+
+        let iter_num: usize = 100;
+        b.iter(|| {
+            std::hint::black_box(for _ in 1..=iter_num {
+                get_ngram_counter(line, max_order);
+            });
+        });
+    }
+}
