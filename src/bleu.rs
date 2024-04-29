@@ -151,3 +151,23 @@ mod test {
         assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
     }
 }
+
+#[cfg(test)]
+mod benchmark {
+    use crate::bleu::compute_score;
+    use test::Bencher;
+    #[bench]
+    fn bench_bleu(b: &mut Bencher) {
+        let max_order: usize = 4;
+        let smooth: bool = true;
+        let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
+        let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
+
+        let iter_num: usize = 100;
+        b.iter(|| {
+            std::hint::black_box(for _ in 1..=iter_num {
+                compute_score(&references, &predictions, max_order, smooth);
+            });
+        });
+    }
+}

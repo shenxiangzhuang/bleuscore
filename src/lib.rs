@@ -37,6 +37,9 @@ println!("result: {:?}", res);
 // brevity_penalty: 1.0, length_ratio: 1.0, translation_length: 4, reference_length: 4 }
 ```
 !*/
+#![feature(test)]
+extern crate test;
+
 mod tokenizer;
 pub use crate::tokenizer::{Tokenizer, Tokenizer13a, TokenizerRegex};
 mod bleu;
