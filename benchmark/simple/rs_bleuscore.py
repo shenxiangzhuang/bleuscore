@@ -1,9 +1,9 @@
 import bleuscore
-
-from simulation_data import get_simulation_data
+from util import get_simulation_data, get_arg_parser
 
 
 if __name__ == "__main__":
-    # TODO: add arg parse
-    predictions, references = get_simulation_data()
+    args = get_arg_parser().parse_args()
+    predictions, references = get_simulation_data(int(args.n))
+
     results = bleuscore.compute(predictions=predictions, references=references)
