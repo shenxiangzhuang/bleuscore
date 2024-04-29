@@ -96,12 +96,11 @@ mod test {
     }
 }
 
-
 #[cfg(test)]
 mod benchmark {
+    use crate::ngram::{get_ngram_counter, get_token_ngram_counter};
     use std::cmp::max;
     use test::Bencher;
-    use crate::ngram::{get_ngram_counter, get_token_ngram_counter};
 
     #[bench]
     fn bench_ngram(b: &mut Bencher) {
