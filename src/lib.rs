@@ -31,7 +31,7 @@ let max_order: usize = 4;
 let smooth: bool = true;
 
 // calculate the BLEU score:
-let res = compute_score(references, predictions, max_order, smooth);
+let res = compute_score(&references, &predictions, max_order, smooth);
 println!("result: {:?}", res);
 // result: BleuScore { bleu: 0.668740304976422, precisions: [0.8, 0.75, 0.6666666666666666, 0.5],
 // brevity_penalty: 1.0, length_ratio: 1.0, translation_length: 4, reference_length: 4 }
