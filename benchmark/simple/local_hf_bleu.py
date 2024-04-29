@@ -224,7 +224,10 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4,
 
 
 if __name__ == "__main__":
-    from simulation_data import predictions, references
+    from util import get_simulation_data, get_arg_parser
+
+    args = get_arg_parser().parse_args()
+    predictions, references = get_simulation_data(int(args.n))
 
     results = compute_bleu(
         reference_corpus=references,
