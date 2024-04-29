@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Implement ngram counts with a better way (#33)
 - Rust `compute_score` function signature changed to use references (#34)
+- Use ahash for better performance (#39)
 
 ## [0.1.1] - 2024-04-26
 ### Changed
