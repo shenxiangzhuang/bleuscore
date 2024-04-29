@@ -1,9 +1,8 @@
 use crate::ngram::get_token_ngram_counter;
 use crate::tokenizer::{Tokenizer, Tokenizer13a};
+use ahash::AHashMap;
 use rayon::prelude::*;
 use std::cmp::min;
-use ahash::AHashMap;
-
 
 /// The BLEU score data struct
 #[derive(Debug, Default)]
@@ -21,11 +20,7 @@ fn add_vectors(vec1: Vec<usize>, vec2: Vec<usize>) -> Vec<usize> {
     assert_eq!(vec1.len(), vec2.len(), "Vectors must have the same length");
 
     // Add elements of vec1 and vec2 element by element
-    let result: Vec<_> = vec1
-        .into_iter()
-        .zip(vec2)
-        .map(|(a, b)| a + b)
-        .collect();
+    let result: Vec<_> = vec1.into_iter().zip(vec2).map(|(a, b)| a + b).collect();
 
     result
 }
@@ -88,16 +83,14 @@ pub fn compute_score(
                 matches_by_order,
             )
         })
-        .reduce_with(
-            |s1, s2| {
-                (
-                    s1.0 + s2.0,
-                    s1.1 + s2.1,
-                    add_vectors(s1.2, s2.2),
-                    add_vectors(s1.3, s2.3),
-                )
-            },
-        );
+        .reduce_with(|s1, s2| {
+            (
+                s1.0 + s2.0,
+                s1.1 + s2.1,
+                add_vectors(s1.2, s2.2),
+                add_vectors(s1.3, s2.3),
+            )
+        });
 
     let (translation_length, reference_length, possible_matches_by_order, matches_by_order) =
         match result {
