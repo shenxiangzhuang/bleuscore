@@ -8,7 +8,7 @@
 
 
 [`bleuscore`](https://github.com/shenxiangzhuang/bleuscore)
-is a fast(not yet :) BLEU score calculator written in rust.
+is a fast BLEU score calculator written in rust.
 
 ## Installation
 The python package has been published to [pypi](https://pypi.org/project/bleuscore/),
