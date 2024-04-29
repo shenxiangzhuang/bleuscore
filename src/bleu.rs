@@ -51,17 +51,13 @@ pub fn compute_score(
             }
         }
 
-        // overlap count
-        let mut overlap_counts = HashMap::new();
+        // overlap(matched) count
         for (k, v) in translation_ngram_counts {
             if merged_ref_ngram_counts.contains_key(k) {
-                overlap_counts.insert(k, min(merged_ref_ngram_counts[k], v));
+                matches_by_order[k.len() - 1] += min(merged_ref_ngram_counts[k], v)
             } else {
                 continue;
             }
-        }
-        for &key in overlap_counts.keys() {
-            matches_by_order[key.len() - 1] += overlap_counts[key];
         }
 
         // possible match
