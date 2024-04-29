@@ -1,7 +1,7 @@
 use crate::ngram::get_token_ngram_counter;
 use crate::tokenizer::{Tokenizer, Tokenizer13a};
-use std::cmp::min;
 use ahash::AHashMap;
+use std::cmp::min;
 /// The BLEU score data struct
 #[derive(Debug, Default)]
 pub struct BleuScore {
