@@ -3,6 +3,8 @@ use crate::tokenizer::{Tokenizer, Tokenizer13a};
 use std::cmp::min;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
+use rayon::prelude::*;
+use std::sync::{Arc, Mutex};
 
 /// The BLEU score data struct
 #[derive(Debug, Default)]
@@ -25,29 +27,38 @@ pub fn compute_score(
 ) -> BleuScore {
     let bleu_start = Instant::now();
     // init
-    let mut matches_by_order: Vec<usize> = vec![0; max_order];
-    let mut possible_matches_by_order: Vec<usize> = vec![0; max_order];
-    let mut reference_length: usize = 0;
-    let mut translation_length: usize = 0;
+    let matches_by_order = Arc::new(Mutex::new(vec![0; max_order]));
+    let possible_matches_by_order = Arc::new(Mutex::new(vec![0; max_order]));
+    let reference_length = Arc::new(Mutex::new(0usize));
+    let translation_length = Arc::new(Mutex::new(0usize));
     let tokenizer = Tokenizer13a::new();
 
     let mut tokenize_duration_sum = Duration::new(0, 0);
-    let mut ngram_count_duration_sum: Duration = Duration::new(0, 0);
-    let mut overlap_count_duration_sum: Duration = Duration::new(0, 0);
 
-    for (references, translation) in references.iter().zip(predictions.iter()) {
-        // tokenize
-        let tokenize_start = Instant::now();
-        let translation_tokens = tokenizer.tokenize(translation);
-        let references_tokens: Vec<Vec<String>> =
-            references.iter().map(|x| tokenizer.tokenize(x)).collect();
-        // lengths
-        reference_length += references_tokens.iter().map(|x| x.len()).min().unwrap();
-        translation_length += translation_tokens.len();
-        tokenize_duration_sum += tokenize_start.elapsed();
-         
-        // ngram count
-        let time_ngram_count_start = Instant::now();
+    // tokenize
+    let tokenize_start = Instant::now();
+    let token_paris: Vec<_> = references.into_par_iter().zip(predictions.into_par_iter()).map(
+        |(references, translation)| {
+            let translation_tokens = tokenizer.tokenize(translation);
+            let references_tokens: Vec<Vec<String>> =
+                references.iter().map(|x| tokenizer.tokenize(x)).collect();
+            (references_tokens, translation_tokens)
+        }
+    ).collect();
+    tokenize_duration_sum += tokenize_start.elapsed();
+
+    // length count & possible match
+    token_paris.par_iter().for_each(|(references_tokens, translation_tokens)| {
+        *reference_length.lock().unwrap() += references_tokens.iter().map(|x| x.len()).min().unwrap();
+        *translation_length.lock().unwrap() += translation_tokens.len();
+
+        for order in 1..=max_order {
+            let possible_matches = translation_tokens.len().saturating_sub(order - 1);
+            if possible_matches > 0 {
+                possible_matches_by_order.lock().unwrap()[order - 1] += possible_matches
+            }
+        }
+
         let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
         let mut merged_ref_ngram_counts = HashMap::new();
         for reference_tokens in references_tokens.iter() {
@@ -59,45 +70,29 @@ pub fn compute_score(
                     .or_insert(value);
             }
         }
-        ngram_count_duration_sum += time_ngram_count_start.elapsed();
 
         // overlap count
-        let overlap_count_start = Instant::now();
-
-        let mut overlap_counts = HashMap::new();
         for (k, v) in translation_ngram_counts {
             if merged_ref_ngram_counts.contains_key(k) {
-                overlap_counts.insert(k, min(merged_ref_ngram_counts[k], v));
+                matches_by_order.lock().unwrap()[k.len() - 1] += min(merged_ref_ngram_counts[k], v);
             } else {
                 continue;
             }
         }
-        for &key in overlap_counts.keys() {
-            matches_by_order[key.len() - 1] += overlap_counts[key];
-        }
-        overlap_count_duration_sum += overlap_count_start.elapsed();
-
-        // possible match
-        for order in 1..=max_order {
-            let possible_matches = translation_tokens.len().saturating_sub(order - 1);
-            if possible_matches > 0 {
-                possible_matches_by_order[order - 1] += possible_matches
-            }
-        }
-    }
+    });
 
     // precisions calculation
     let mut precisions: Vec<f64> = vec![0.0; max_order];
     for i in 0..max_order {
         match smooth {
             true => {
-                precisions[i] = (matches_by_order[i] as f64 + 1.0)
-                    / (possible_matches_by_order[i] as f64 + 1.0);
+                precisions[i] = (matches_by_order.lock().unwrap()[i] as f64 + 1.0)
+                    / (possible_matches_by_order.lock().unwrap()[i] as f64 + 1.0);
             }
             false => {
-                if possible_matches_by_order[i] > 0 {
+                if possible_matches_by_order.lock().unwrap()[i] > 0 {
                     precisions[i] =
-                        (matches_by_order[i] as f64) / (possible_matches_by_order[i] as f64)
+                        (matches_by_order.lock().unwrap()[i] as f64) / (possible_matches_by_order.lock().unwrap()[i] as f64)
                 } else {
                     precisions[i] = 0.0;
                 }
@@ -113,7 +108,7 @@ pub fn compute_score(
         geo_mean = p_log_sum.exp();
     }
 
-    let length_ratio: f64 = translation_length as f64 / reference_length as f64;
+    let length_ratio: f64 = *translation_length.lock().unwrap() as f64 / *reference_length.lock().unwrap() as f64;
     let mut brevity_penalty = 1.0;
     if length_ratio <= 1.0 {
         brevity_penalty = (1.0 - 1.0 / length_ratio).exp();
@@ -122,8 +117,6 @@ pub fn compute_score(
     
     println!("bleu duration: {:?}", bleu_start.elapsed());
     println!("tokenize duration: {:?}", tokenize_duration_sum);
-    println!("ngram count duration: {:?}", ngram_count_duration_sum);
-    println!("overlap count duration: {:?}", overlap_count_duration_sum);
 
 
     BleuScore {
@@ -131,8 +124,8 @@ pub fn compute_score(
         precisions,
         brevity_penalty,
         length_ratio,
-        translation_length,
-        reference_length,
+        translation_length: *translation_length.clone().lock().unwrap(),
+        reference_length: *reference_length.clone().lock().unwrap(),
     }
 }
 
