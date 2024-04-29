@@ -17,8 +17,8 @@ pub struct BleuScore {
 /// compute the BLEU score with `Tokenizer13a` as default tokenizer.
 /// The implementation is based on [huggingface/nmt](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/bleu.py)
 pub fn compute_score(
-    references: Vec<Vec<String>>,
-    predictions: Vec<String>,
+    references: &[Vec<String>],
+    predictions: &[String],
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
@@ -125,7 +125,7 @@ mod test {
         let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
         let max_order: usize = 4;
         let smooth: bool = true;
-        let res = compute_score(references, predictions, max_order, smooth);
+        let res = compute_score(&references, &predictions, max_order, smooth);
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("result: {:?}", res);
         assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
