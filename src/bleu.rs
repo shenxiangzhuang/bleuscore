@@ -2,7 +2,8 @@ use crate::ngram::get_token_ngram_counter;
 use crate::tokenizer::{Tokenizer, Tokenizer13a};
 use rayon::prelude::*;
 use std::cmp::min;
-use std::collections::HashMap;
+use ahash::AHashMap;
+
 
 /// The BLEU score data struct
 #[derive(Debug, Default)]
@@ -60,7 +61,7 @@ pub fn compute_score(
             }
 
             let translation_ngram_counts = get_token_ngram_counter(&translation_tokens, max_order);
-            let mut merged_ref_ngram_counts = HashMap::new();
+            let mut merged_ref_ngram_counts = AHashMap::new();
             for reference_tokens in references_tokens.iter() {
                 let reference_ngram_counts = get_token_ngram_counter(reference_tokens, max_order);
                 for (key, value) in reference_ngram_counts {

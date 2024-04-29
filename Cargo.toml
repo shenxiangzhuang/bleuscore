@@ -20,6 +20,7 @@ regex = "1.10.4"
 lazy_static = "1.4.0"
 counter = "0.5.7"
 rayon = "1.10.0"
+ahash = "0.8.11"
 
 [dependencies.pyo3]
 version = "0.21.1"
