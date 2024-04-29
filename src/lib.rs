@@ -68,7 +68,7 @@ fn compute(
     max_order: usize,
     smooth: bool,
 ) -> PyResult<PyObject> {
-    let bleu = compute_score(references, predictions, max_order, smooth);
+    let bleu = compute_score(&references, &predictions, max_order, smooth);
     Python::with_gil(|py| {
         let bleu_dict = [
             ("bleu", bleu.bleu.to_object(py)),
