@@ -22,7 +22,7 @@ fn add_vectors(vec1: Vec<usize>, vec2: Vec<usize>) -> Vec<usize> {
     // Add elements of vec1 and vec2 element by element
     let result: Vec<_> = vec1
         .into_iter()
-        .zip(vec2.into_iter())
+        .zip(vec2)
         .map(|(a, b)| a + b)
         .collect();
 
@@ -88,7 +88,6 @@ pub fn compute_score(
             )
         })
         .reduce_with(
-            // (0usize, 0usize, vec![0usize; max_order], vec![0usize; max_order]),
             |s1, s2| {
                 (
                     s1.0 + s2.0,
@@ -101,7 +100,7 @@ pub fn compute_score(
 
     let (translation_length, reference_length, possible_matches_by_order, matches_by_order) =
         match result {
-            None => panic!(""),
+            None => panic!("Pair statistics calculation got empty result"),
             Some(stats) => stats,
         };
 
