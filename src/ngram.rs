@@ -98,7 +98,7 @@ mod test {
 
 #[cfg(test)]
 mod benchmark {
-    use crate::ngram::{get_ngram_counter};
+    use crate::ngram::get_ngram_counter;
     use test::Bencher;
 
     #[bench]
