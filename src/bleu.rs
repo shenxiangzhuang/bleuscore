@@ -142,7 +142,7 @@ mod benchmark {
         let smooth: bool = true;
         let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
         let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
-        
+
         let iter_num: usize = 100;
         b.iter(|| {
             std::hint::black_box(for _ in 1..=iter_num {

@@ -1,3 +1,5 @@
+name: Rust Bencher
+
 on:
   push:
     branches: [ "master" ]
@@ -14,7 +16,7 @@ jobs:
       - name: Track base branch benchmarks with Bencher
         run: |
           bencher run \
-          --project save-walter-white-1234abcd \
+          --project bleuscore \
           --token '${{ secrets.BENCHER_API_TOKEN }}' \
           --branch master \
           --testbed ubuntu-latest \
