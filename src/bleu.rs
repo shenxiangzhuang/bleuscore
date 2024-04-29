@@ -145,4 +145,24 @@ mod benchmark {
             });
         });
     }
+
+    #[bench]
+    fn bench_batch_bleu(b: &mut Bencher) {
+        let batch_size = 100;
+
+        let max_order: usize = 4;
+        let smooth: bool = true;
+        let mut references: Vec<Vec<String>> = vec![];
+        references.resize_with(batch_size, || vec!["Hello, World!".to_string()]);
+        
+        let mut predictions: Vec<String> = vec![];
+        predictions.resize_with(batch_size, || "Yellow, World!".to_string());
+        
+        let iter_num: usize = 100;
+        b.iter(|| {
+            std::hint::black_box(for _ in 1..=iter_num {
+                compute_score(&references, &predictions, max_order, smooth);
+            });
+        });
+    }
 }
