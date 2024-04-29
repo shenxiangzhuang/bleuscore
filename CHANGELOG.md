@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2024-04-29
+
+
 ### Changed
 - Implement ngram counts with a better way (#33)
 - Rust `compute_score` function signature changed to use references (#34)
 - Use rayon to run every prediction-references statistics calculation parallely (#38)
 - Use ahash for better performance (#39)
+
 
 ## [0.1.1] - 2024-04-26
 ### Changed
