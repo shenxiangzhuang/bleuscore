@@ -1,3 +1,5 @@
+name: Rust Benchmark PR
+
 on:
   pull_request:
     types: [opened, reopened, edited, synchronize]
