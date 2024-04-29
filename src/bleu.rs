@@ -140,11 +140,13 @@ mod benchmark {
     fn bench_bleu(b: &mut Bencher) {
         let max_order: usize = 4;
         let smooth: bool = true;
+        let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
+        let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
+        
+        let iter_num: usize = 100;
         b.iter(|| {
-            std::hint::black_box(for _ in 1..=100 {
-                let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
-                let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
-                compute_score(references, predictions, max_order, smooth);
+            std::hint::black_box(for _ in 1..=iter_num {
+                compute_score(&references, &predictions, max_order, smooth);
             });
         });
     }
