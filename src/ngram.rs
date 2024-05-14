@@ -1,10 +1,10 @@
 use counter::Counter;
-use std::collections::HashMap;
+use gxhash::GxHashMap;
 
 /// Here the tokens' type is `&[String]` rather than `&Vec<String>`
 /// to fix `clippy::not_unsafe_ptr_arg_deref` error.
-pub fn get_token_ngram_counter(tokens: &[String], max_order: usize) -> HashMap<&[String], usize> {
-    let mut count_map: HashMap<&[String], usize> = HashMap::new();
+pub fn get_token_ngram_counter(tokens: &[String], max_order: usize) -> GxHashMap<&[String], usize> {
+    let mut count_map: GxHashMap<&[String], usize> = GxHashMap::default();
     for order in 1..=max_order {
         for start_index in 0..(tokens.len().saturating_sub(order - 1)) {
             let ngram = &tokens[start_index..(start_index + order)];
