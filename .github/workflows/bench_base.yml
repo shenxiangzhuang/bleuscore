@@ -18,5 +18,6 @@ jobs:
           --token '${{ secrets.BENCHER_API_TOKEN }}' \
           --branch master \
           --testbed ubuntu-latest \
+          --adapter rust_bench \
           --err \
           cargo bench --all
