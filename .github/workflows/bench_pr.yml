@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: bencherdev/bencher@main
+      - uses: bencherdev/bencher@v0.4.8
       - name: Track PR Benchmarks with Bencher
         run: |
           bencher run \
