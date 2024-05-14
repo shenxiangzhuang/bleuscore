@@ -24,7 +24,7 @@ jobs:
           --branch-start-point '${{ github.base_ref }}' \
           --branch-start-point-hash '${{ github.event.pull_request.base.sha }}' \
           --testbed ubuntu-latest \
-          --adapter rust \
+#          --adapter rust \
           --err \
           --github-actions '${{ secrets.GITHUB_TOKEN }}' \
           cargo bench --all
