@@ -88,7 +88,7 @@ pub fn compute_score(
                 matches_by_order,
             )
         })
-        .reduce_with(|s1, s2| agg_stat(s1, s2));
+        .reduce_with(agg_stat);
 
     let Stat(translation_length, reference_length, possible_matches_by_order, matches_by_order) =
         match stat_result {
