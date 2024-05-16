@@ -1,5 +1,5 @@
-use counter::Counter;
 use ahash::AHashMap;
+use counter::Counter;
 
 /// Here the tokens' type is `&[String]` rather than `&Vec<String>`
 /// to fix `clippy::not_unsafe_ptr_arg_deref` error.
