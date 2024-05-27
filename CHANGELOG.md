@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2024-05-27
+
 ### Fixed
 - `ngram` bench use counter lib's function rather than the truly used function.
 
