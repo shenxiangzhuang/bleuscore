@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `ngram` bench use counter lib's function rather than the truly used function.
 
 ### Changed
 - Use AHash in ngram module

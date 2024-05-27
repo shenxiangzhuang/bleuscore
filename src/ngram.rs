@@ -1,5 +1,4 @@
 use ahash::AHashMap;
-use counter::Counter;
 
 /// Here the tokens' type is `&[String]` rather than `&Vec<String>`
 /// to fix `clippy::not_unsafe_ptr_arg_deref` error.
@@ -17,24 +16,10 @@ pub fn get_token_ngram_counter(tokens: &[String], max_order: usize) -> AHashMap<
     count_map
 }
 
-/// TODO: change to use Counter to count ngram
-#[allow(dead_code)]
-fn get_ngram_counter(line: &str, max_order: usize) -> Counter<&str> {
-    let mut counts: Counter<&str> = Counter::new();
-    for order in 1..=max_order {
-        for start_index in 0..(line.len().saturating_sub(order - 1)) {
-            // println!("line: {}, start_index: {}, order: {}", line, start_index, order);
-            let ngram = &line[start_index..(start_index + order)];
-            // println!("ngram: {}", ngram);
-            counts[&ngram] += 1;
-        }
-    }
-    counts
-}
 
 #[cfg(test)]
 mod test {
-    use crate::ngram::{get_ngram_counter, get_token_ngram_counter};
+    use crate::ngram::get_token_ngram_counter;
 
     #[test]
     fn test_get_token_ngram_short() {
@@ -69,47 +54,26 @@ mod test {
 
         assert_eq!(counter.len(), 9);
     }
-
-    #[test]
-    fn test_get_ngram_short() {
-        let counter = get_ngram_counter("ab", 4);
-        assert_eq!(counter[&"a"], 1);
-        assert_eq!(counter[&"b"], 1);
-        assert_eq!(counter[&"ab"], 1);
-    }
-
-    #[test]
-    fn test_get_ngram_long() {
-        let counter = get_ngram_counter("aabc", 4);
-        assert_eq!(counter[&"a"], 2);
-        assert_eq!(counter[&"b"], 1);
-        assert_eq!(counter[&"c"], 1);
-        assert_eq!(counter[&"d"], 0);
-
-        assert_eq!(counter[&"aa"], 1);
-        assert_eq!(counter[&"ab"], 1);
-        assert_eq!(counter[&"bc"], 1);
-        assert_eq!(counter[&"ac"], 0);
-
-        assert_eq!(counter[&"aab"], 1);
-        assert_eq!(counter[&"aabc"], 1);
-    }
 }
 
 #[cfg(test)]
 mod benchmark {
-    use crate::ngram::get_ngram_counter;
+    use crate::ngram::get_token_ngram_counter;
     use test::Bencher;
 
     #[bench]
     fn bench_ngram(b: &mut Bencher) {
-        let line = "aabc";
-        let max_order = 4;
+        let tokens: Vec<String> = vec![
+            "a".to_string(),
+            "a".to_string(),
+            "b".to_string(),
+            "c".to_string(),
+        ];        let max_order = 4;
 
         let iter_num: usize = 100;
         b.iter(|| {
             std::hint::black_box(for _ in 1..=iter_num {
-                get_ngram_counter(line, max_order);
+                get_token_ngram_counter(&tokens, max_order);
             });
         });
     }
