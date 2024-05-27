@@ -16,7 +16,6 @@ pub fn get_token_ngram_counter(tokens: &[String], max_order: usize) -> AHashMap<
     count_map
 }
 
-
 #[cfg(test)]
 mod test {
     use crate::ngram::get_token_ngram_counter;
@@ -68,7 +67,8 @@ mod benchmark {
             "a".to_string(),
             "b".to_string(),
             "c".to_string(),
-        ];        let max_order = 4;
+        ];
+        let max_order = 4;
 
         let iter_num: usize = 100;
         b.iter(|| {
