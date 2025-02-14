@@ -14,7 +14,7 @@ jobs:
         rust:
           - nightly # Now grcov only support nightly toolchain, so we run tests on other toolchains on travis.
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
