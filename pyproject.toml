@@ -38,7 +38,7 @@ Source = 'https://github.com/shenxiangzhuang/bleuscore'
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-sugar", "hypothesis", "evaluate", "sacrebleu"]
-lint = ["black", "ruff~=0.3.7"]
+lint = ["black", "ruff~=0.9.6"]
 #docs = []
 #dev = []
 
