@@ -72,10 +72,9 @@ mod benchmark {
 
         let iter_num: usize = 100;
         b.iter(|| {
-            for _ in 1..=iter_num {
+            std::hint::black_box(for _ in 1..=iter_num {
                 get_token_ngram_counter(&tokens, max_order);
-            };
-            std::hint::black_box(());
+            });
         });
     }
 }
