@@ -14,7 +14,6 @@ updates:
     schedule:
       interval: "monthly"
   - package-ecosystem: "pip"
-    directories:
-      - "/"
+    directory: "/"
     schedule:
       interval: "monthly"
