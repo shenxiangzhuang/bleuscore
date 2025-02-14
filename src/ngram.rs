@@ -5,7 +5,7 @@ use ahash::AHashMap;
 pub fn get_token_ngram_counter(tokens: &[String], max_order: usize) -> AHashMap<&[String], usize> {
     let mut count_map: AHashMap<&[String], usize> = AHashMap::new();
     for order in 1..=max_order {
-        for start_index in 0..(tokens.len().saturating_sub(order - 1)) {
+        for start_index in 0..tokens.len().saturating_sub(order - 1) {
             let ngram = &tokens[start_index..(start_index + order)];
             count_map
                 .entry(ngram)
