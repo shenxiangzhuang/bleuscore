@@ -79,7 +79,7 @@ You can navigate [benchmark](./benchmark/README.md) for more benchmark details.
 ### N=100
 
 ```bash
-hyhyperfine --warmup 5 --runs 10   \
+hyperfine --warmup 5 --runs 10   \
   "python simple/rs_bleuscore.py 100" \
   "python simple/local_hf_bleu.py 100" \
   "python simple/sacre_bleu.py 100"   \
