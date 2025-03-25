@@ -64,7 +64,7 @@ jobs:
 
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
-        uses: uraimo/run-on-arch-action@v2.8.1
+        uses: uraimo/run-on-arch-action@v3.0.0
         with:
           arch: ${{ matrix.platform.target }}
           distro: ubuntu22.04
