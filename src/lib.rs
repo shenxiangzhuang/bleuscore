@@ -47,7 +47,7 @@ mod ngram;
 pub use crate::bleu::{compute_score, BleuScore};
 
 use pyo3::prelude::*;
-use pyo3::types::IntoPyDict;
+use pyo3::types::PyDict;
 
 #[pyfunction]
 fn tokenizer_regex(line: &str) -> PyResult<Vec<String>> {
@@ -73,15 +73,13 @@ fn compute(
 ) -> PyResult<PyObject> {
     let bleu = compute_score(&references, &predictions, max_order, smooth);
     Python::with_gil(|py| {
-        let bleu_dict = [
-            ("bleu", bleu.bleu.to_object(py)),
-            ("precisions", bleu.precisions.to_object(py)),
-            ("brevity_penalty", bleu.brevity_penalty.to_object(py)),
-            ("length_ratio", bleu.length_ratio.to_object(py)),
-            ("translation_length", bleu.translation_length.to_object(py)),
-            ("reference_length", bleu.reference_length.to_object(py)),
-        ]
-        .into_py_dict_bound(py);
+        let bleu_dict = PyDict::new(py);
+        bleu_dict.set_item("bleu", bleu.bleu)?;
+        bleu_dict.set_item("precisions", bleu.precisions)?;
+        bleu_dict.set_item("brevity_penalty", bleu.brevity_penalty)?;
+        bleu_dict.set_item("length_ratio", bleu.length_ratio)?;
+        bleu_dict.set_item("translation_length", bleu.translation_length)?;
+        bleu_dict.set_item("reference_length", bleu.reference_length)?;
         Ok(bleu_dict.into())
     })
 }

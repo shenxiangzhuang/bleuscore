@@ -4,9 +4,10 @@ use ahash::AHashMap;
 use rayon::prelude::*;
 use std::cmp::min;
 use std::ops::Add;
+use pyo3::IntoPyObject;
 
 /// The BLEU score data struct
-#[derive(Debug, Default)]
+#[derive(Debug, Default, IntoPyObject)]
 pub struct BleuScore {
     pub bleu: f64,
     pub precisions: Vec<f64>,
