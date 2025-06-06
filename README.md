@@ -4,7 +4,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/bleuscore)](https://crates.io/crates/bleuscore)
 [![PyPI - Version](https://img.shields.io/pypi/v/bleuscore)](https://pypi.org/project/bleuscore/)
-![docs.rs](https://img.shields.io/docsrs/bleuscore)
+[![docs.rs](https://img.shields.io/docsrs/bleuscore)](https://docs.rs/bleuscore/0.1.3/bleuscore/)
 
 
 [`bleuscore`](https://github.com/shenxiangzhuang/bleuscore)
