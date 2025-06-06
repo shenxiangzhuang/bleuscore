@@ -42,3 +42,4 @@ extern crate test;
 pub mod bleu;
 pub mod ngram;
 pub mod tokenizer;
+pub use bleu::compute_score;
