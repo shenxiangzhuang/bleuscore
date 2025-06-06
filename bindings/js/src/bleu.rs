@@ -1,6 +1,6 @@
-use wasm_bindgen::prelude::*;
+use serde::{Deserialize, Serialize};
 use tsify::Tsify;
-use serde::{Serialize, Deserialize};
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
@@ -69,7 +69,7 @@ pub fn compute_score(
 
     let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth);
     console_log!("bleu_result: {:?}", res);
-    Ok(BleuScore{
+    Ok(BleuScore {
         bleu: res.bleu,
         precisions: res.precisions,
         brevity_penalty: res.brevity_penalty,

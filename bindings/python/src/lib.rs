@@ -1,5 +1,5 @@
+use bleuscore::bleu::compute_score;
 use bleuscore::tokenizer::{Tokenizer, Tokenizer13a, TokenizerRegex};
-use bleuscore::bleu::{compute_score};
 
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
