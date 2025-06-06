@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BleuScore Online - Fast BLEU Score Calculator</title>
+    <meta name="description" content="Calculate BLEU scores online with our fast, easy-to-use web calculator. Compare machine translation predictions with reference texts instantly.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Modern Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 16 85% 45%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 20 20% 92%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 20 20% 94%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 20 20% 92%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 20 20% 88%;
+            --input: 20 20% 88%;
+            --ring: 16 85% 45%;
+            --radius: 0.5rem;
+        }
+        
+        * {
+            border-color: hsl(var(--border));
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+        
+        .card {
+            background-color: hsl(var(--card));
+            color: hsl(var(--card-foreground));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .card-header {
+            padding: 0.75rem 0.75rem 0;
+        }
+        
+        .card-content {
+            padding: 0.75rem;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+        
+        .card-description {
+            font-size: 0.8rem;
+            color: hsl(var(--muted-foreground));
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            text-decoration: none;
+        }
+        
+        .btn:focus-visible {
+            outline: 2px solid hsl(var(--ring));
+            outline-offset: 2px;
+        }
+        
+        .btn-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            padding: 0.5rem 1rem;
+            height: 2.5rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: hsl(var(--primary) / 0.9);
+        }
+        
+        .btn-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            padding: 0.5rem 1rem;
+            height: 2.5rem;
+        }
+        
+        .btn-secondary:hover {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+        
+        .btn-ghost {
+            color: hsl(var(--foreground));
+            background: transparent;
+            padding: 0.5rem 1rem;
+            height: 2.5rem;
+        }
+        
+        .btn-ghost:hover {
+            background-color: hsl(var(--accent));
+            color: hsl(var(--accent-foreground));
+        }
+        
+        .btn-destructive {
+            background-color: hsl(var(--destructive));
+            color: hsl(var(--destructive-foreground));
+            padding: 0.25rem 0.5rem;
+            height: 2rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-destructive:hover {
+            background-color: hsl(var(--destructive) / 0.9);
+        }
+        
+        .btn-sm {
+            height: 1.5rem;
+            padding: 0.125rem 0.375rem;
+            font-size: 0.65rem;
+        }
+        
+        .input {
+            display: flex;
+            height: 2rem;
+            width: 100%;
+            border-radius: calc(var(--radius) - 2px);
+            border: 2px solid hsl(var(--input));
+            background-color: hsl(var(--background));
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: hsl(var(--primary));
+            box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
+        }
+        
+        .input::placeholder {
+            color: hsl(var(--muted-foreground));
+        }
+        
+        .textarea {
+            display: flex;
+            min-height: 2rem;
+            width: 100%;
+            border-radius: calc(var(--radius) - 2px);
+            border: 2px solid hsl(var(--input));
+            background-color: hsl(var(--background));
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8rem;
+            transition: all 0.2s ease-in-out;
+            resize: none;
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .textarea:focus {
+            outline: none;
+            border-color: hsl(var(--primary));
+            box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
+        }
+        
+        .label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        
+        .checkbox {
+            height: 1rem;
+            width: 1rem;
+            border-radius: 0.25rem;
+            border: 1px solid hsl(var(--primary));
+            background-color: hsl(var(--background));
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            border: 1px solid transparent;
+            padding: 0.0625rem 0.375rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .badge-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+        }
+        
+        .progress {
+            height: 0.375rem;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 9999px;
+            background-color: hsl(var(--secondary));
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: hsl(var(--primary));
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .prediction-card {
+            border: 2px solid hsl(var(--border));
+            border-radius: var(--radius);
+            background-color: hsl(var(--background));
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .prediction-card:hover {
+            border-color: hsl(var(--primary) / 0.3);
+            box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .reference-item {
+            border: 2px solid hsl(var(--border));
+            border-radius: calc(var(--radius) - 2px);
+            background-color: hsl(var(--card));
+            padding: 0.5rem;
+            margin-bottom: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .reference-item:hover {
+            border-color: hsl(var(--primary) / 0.4);
+            box-shadow: 0 1px 3px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .add-button {
+            border: 2px dashed hsl(var(--primary) / 0.4);
+            border-radius: var(--radius);
+            background-color: hsl(var(--primary) / 0.03);
+            color: hsl(var(--primary));
+            padding: 1rem;
+            width: 100%;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .add-button:hover {
+            border-color: hsl(var(--primary) / 0.6);
+            background-color: hsl(var(--primary) / 0.08);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px -2px rgb(0 0 0 / 0.1);
+        }
+        
+        .metric-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+        
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+        
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            font-size: 0.8rem;
+        }
+        
+        .score-display {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .score-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+        
+        .score-excellent { color: #16a34a; }
+        .score-good { color: hsl(var(--primary)); }
+        .score-fair { color: #ea580c; }
+        .score-poor { color: hsl(var(--destructive)); }
+        
+        .precision-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+        }
+        
+        .precision-label {
+            width: 3rem;
+            font-weight: 500;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .precision-value {
+            width: 3rem;
+            text-align: right;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            font-size: 0.8rem;
+        }
+        
+        .sticky-sidebar {
+            position: sticky;
+            top: 1rem;
+            max-height: calc(100vh - 2rem);
+            overflow-y: auto;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background-color: hsl(var(--border));
+            margin: 0.75rem 0;
+        }
+        
+        .loading-spinner {
+            border: 2px solid hsl(var(--muted));
+            border-top: 2px solid hsl(var(--primary));
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-alert {
+            background-color: hsl(var(--destructive) / 0.1);
+            border: 1px solid hsl(var(--destructive) / 0.2);
+            color: hsl(var(--destructive));
+            border-radius: var(--radius);
+            padding: 1rem;
+        }
+        
+        .hero-section {
+            background-color: hsl(var(--card));
+            color: hsl(var(--foreground));
+            padding: 0.75rem 0;
+            text-align: center;
+            position: relative;
+            border-bottom: 2px solid hsl(var(--border));
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+        
+        .hero-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            letter-spacing: -0.025em;
+            color: hsl(var(--primary));
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            font-weight: 400;
+            margin-top: 0.125rem;
+            line-height: 1.2;
+        }
+
+        .hero-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.75rem;
+        }
+
+        .hero-link {
+            background-color: hsl(var(--secondary));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.3rem;
+            padding: 0.3rem 0.45rem;
+            color: hsl(var(--foreground));
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            white-space: nowrap;
+        }
+
+        .hero-link:hover {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            border-color: hsl(var(--primary));
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-links {
+                gap: 0.375rem;
+                margin-top: 0.5rem;
+            }
+            
+            .hero-link {
+                font-size: 0.65rem;
+                padding: 0.25rem 0.35rem;
+                gap: 0.25rem;
+            }
+        }
+
+        .footer {
+            background-color: hsl(var(--muted));
+            color: hsl(var(--muted-foreground));
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid hsl(var(--border));
+            margin-top: auto;
+        }
+
+        .footer-link {
+            color: hsl(var(--primary));
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            display: inline;
+            font-size: 0.875rem;
+        }
+
+        .footer-link:hover {
+            color: hsl(var(--primary) / 0.8);
+        }
+
+        .footer-link svg {
+            display: inline;
+            vertical-align: middle;
+            margin-right: 0.25rem;
+        }
+
+        .prediction-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.375rem;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .prediction-label {
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        .prediction-number {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            width: 1.125rem;
+            height: 1.125rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .reference-header {
+            font-weight: 500;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 0.375rem;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="max-w-6xl mx-auto px-4">
+            <h1 class="hero-title">BleuScore Online</h1>
+            <div class="hero-links">
+                <a href="https://crates.io/crates/bleuscore" target="_blank" rel="noopener noreferrer" class="hero-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="7.5,3 12,5.5 16.5,3"/>
+                        <polyline points="7.5,21 12,18.5 16.5,21"/>
+                        <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                        <line x1="12" y1="12.01" x2="12" y2="22.08"/>
+                    </svg>
+                    Crate
+                </a>
+                <a href="https://pypi.org/project/bleuscore/" target="_blank" rel="noopener noreferrer" class="hero-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9.585 11.692h4.328s2.432.039 2.432-2.35V5.391S16.714 3 11.936 3C7.362 3 7.647 4.983 7.647 4.983l.006 2.055h4.363v.617H5.92s-2.927-.332-2.927 4.282 2.555 4.45 2.555 4.45h1.524v-2.141s-.083-2.554 2.513-2.554zm-.056-5.74c-.084-.78.574-1.525 1.47-1.525.896 0 1.554.745 1.47 1.525-.084.78-.574 1.405-1.47 1.405-.896 0-1.386-.625-1.47-1.405z"/>
+                        <path d="M14.415 12.308h-4.328s-2.432-.04-2.432 2.35v3.951s-.369 2.391 4.409 2.391c4.573 0 4.288-1.983 4.288-1.983l-.006-2.055h-4.363v-.617h6.097s2.927.332 2.927-4.282-2.555-4.45-2.555-4.45h-1.524v2.141s.083 2.554-2.513 2.554zm.056 5.74c.084.78-.574 1.525-1.47 1.525-.896 0-1.554-.745-1.47-1.525.084-.78.574-1.405 1.47-1.405.896 0 1.386.625 1.47 1.405z"/>
+                    </svg>
+                    PyPI
+                </a>
+                <a href="https://www.npmjs.com/package/bleuscore-js" target="_blank" rel="noopener noreferrer" class="hero-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h18v18H3V3zm2.5 10.5v-7h4v7h-4zm5 0v-7h1.5v5.5h1v-5.5h1.5v7h-4zm5.5 0v-7h1.5v5.5h1v-3.5h1.5v7h-4z"/>
+                    </svg>
+                    NPM
+                </a>
+                <a href="https://github.com/shenxiangzhuang/bleuscore" target="_blank" rel="noopener noreferrer" class="hero-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Left Side: Input Area -->
+                <div class="space-y-4">
+                    <!-- Predictions & References -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Predictions & References</h2>
+                            <p class="card-description">
+                                Add your machine translation predictions and their corresponding reference translations.
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <div id="predictions-container" class="space-y-3">
+                                <!-- Prediction items will be dynamically added here -->
+                            </div>
+                            
+                            <button id="add-prediction-btn" class="add-button mt-3">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add Prediction
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Configuration</h2>
+                            <p class="card-description">
+                                Adjust the BLEU score calculation parameters.
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label for="ngram" class="label">N-gram Order</label>
+                                    <input type="number" id="ngram" class="input" value="4" min="1" max="10">
+                                </div>
+                                
+                                <div class="space-y-1">
+                                    <label class="label">Smoothing</label>
+                                    <div class="flex items-center space-x-2 pt-1">
+                                        <input type="checkbox" id="smoothing" class="checkbox">
+                                        <label for="smoothing" class="text-sm">Enable smoothing</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="section-divider"></div>
+                            
+                            <button id="calculate-btn" class="btn btn-primary w-full">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                                </svg>
+                                Calculate BLEU Score
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Results -->
+                <div class="sticky-sidebar">
+                    <!-- Loading State -->
+                    <div id="loading" class="hidden card">
+                        <div class="card-content text-center">
+                            <div class="loading-spinner mx-auto mb-3"></div>
+                            <p class="text-muted-foreground">Calculating BLEU score...</p>
+                        </div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="error" class="hidden error-alert mb-4">
+                        <div class="font-medium mb-1">Error</div>
+                        <div id="error-message" class="text-sm"></div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="results" class="hidden space-y-4">
+                        <!-- Main Score -->
+                        <div class="card">
+                            <div class="card-content score-display">
+                                <div class="mb-2">
+                                    <div class="score-number" id="score">0.0000</div>
+                                    <div class="badge badge-secondary mt-2" id="score-meaning">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Metrics -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Detailed Metrics</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="metric-grid">
+                                    <div class="metric-item">
+                                        <span class="metric-label">BLEU Score</span>
+                                        <span class="metric-value" id="bleu-detailed">-</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">Brevity Penalty</span>
+                                        <span class="metric-value" id="brevity-penalty">-</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">Length Ratio</span>
+                                        <span class="metric-value" id="length-ratio">-</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">Translation Length</span>
+                                        <span class="metric-value" id="translation-length">-</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">Reference Length</span>
+                                        <span class="metric-value" id="reference-length">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- N-gram Precisions -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">N-gram Precisions</h3>
+                            </div>
+                            <div class="card-content">
+                                <div id="ngram-precisions" class="space-y-2">
+                                    <!-- Precision bars will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Default State -->
+                    <div id="default-state" class="card">
+                        <div class="card-content text-center py-8">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 text-muted-foreground">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                            </svg>
+                            <h3 class="card-title mb-2">Ready to Calculate</h3>
+                            <p class="card-description">
+                                Add your predictions and references, then click "Calculate BLEU Score" to see the results.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Created by 
+            <a href="https://github.com/shenxiangzhuang" target="_blank" rel="noopener noreferrer" class="footer-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                Mathew Shen
+            </a> • Powered by Rust + WebAssembly
+        </p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html> 

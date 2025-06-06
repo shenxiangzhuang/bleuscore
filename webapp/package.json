@@ -1,0 +1,38 @@
+{
+  "name": "bleuscore-webapp",
+  "version": "1.0.0",
+  "description": "BleuScore Online - Fast BLEU Score Calculator Web Application",
+  "main": "app.js",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "dev": "webpack serve --mode development --open",
+    "build": "webpack --mode production",
+    "serve": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "bleu",
+    "score",
+    "nlp",
+    "machine-translation",
+    "static-site"
+  ],
+  "author": "BleuScore Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shenxiangzhuang/bleuscore.git"
+  },
+  "dependencies": {
+    "bleuscore-js": "^0.1.4"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ]
+}
