@@ -1,6 +1,6 @@
 [package]
 name = "bleuscore-js"
-version.workspace = true
+version = "0.1.4"
 authors.workspace = true
 documentation.workspace = true
 repository.workspace = true

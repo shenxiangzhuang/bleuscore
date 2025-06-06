@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BleuScore Online - Fast BLEU Score Calculator</title>
+    <meta name="description" content="Calculate BLEU scores online with our fast, easy-to-use web calculator. Compare machine translation predictions with reference texts instantly.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .score-excellent { color: #16a34a; }
+        .score-good { color: #2563eb; }
+        .score-fair { color: #ea580c; }
+        .score-poor { color: #dc2626; }
+        
+        .precision-bar {
+            background-color: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .precision-fill {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .precision-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        
+        .precision-label {
+            width: 60px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .precision-value {
+            width: 50px;
+            text-align: right;
+            font-family: monospace;
+            color: #1f2937;
+        }
+        
+        .loading-spinner {
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">BleuScore Online</h1>
+                <p class="text-xl opacity-90 mb-4">Fast BLEU Score Calculator</p>
+                <div class="flex justify-center space-x-4 text-sm">
+                    <a href="https://github.com/shenxiangzhuang/bleuscore" 
+                       target="_blank" 
+                       class="hover:text-blue-200 transition-colors">
+                        📚 GitHub Repository
+                    </a>
+                    <span class="opacity-50">|</span>
+                    <a href="https://en.wikipedia.org/wiki/BLEU" 
+                       target="_blank" 
+                       class="hover:text-blue-200 transition-colors">
+                        📖 About BLEU
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Input Section -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Input</h2>
+                    
+                    <!-- Predictions Input -->
+                    <div class="mb-6">
+                        <label for="predictions" class="block text-sm font-medium text-gray-700 mb-2">
+                            Predictions (one per line)
+                        </label>
+                        <textarea id="predictions" 
+                                  rows="6" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Enter your machine translation predictions, one per line..."></textarea>
+                    </div>
+                    
+                    <!-- References Input -->
+                    <div class="mb-6">
+                        <label for="references" class="block text-sm font-medium text-gray-700 mb-2">
+                            References (one per line)
+                        </label>
+                        <textarea id="references" 
+                                  rows="6" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Enter your reference translations, one per line..."></textarea>
+                    </div>
+                    
+                    <!-- Configuration -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="ngram" class="block text-sm font-medium text-gray-700 mb-2">
+                                N-gram Order
+                            </label>
+                            <select id="ngram" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="1">1-gram</option>
+                                <option value="2">2-gram</option>
+                                <option value="3">3-gram</option>
+                                <option value="4" selected>4-gram</option>
+                                <option value="5">5-gram</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Smoothing
+                            </label>
+                            <label class="flex items-center pt-2">
+                                <input type="checkbox" id="smoothing" class="rounded text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-600">Enable smoothing</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Calculate Button -->
+                    <button id="calculate-btn" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                        Calculate BLEU Score
+                    </button>
+                    
+                    <p class="text-sm text-gray-500 mt-2 text-center">
+                        Press <kbd class="bg-gray-100 px-1 rounded">Ctrl+Enter</kbd> to calculate quickly
+                    </p>
+                </div>
+
+                <!-- Results Section -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Results</h2>
+                    
+                    <!-- Loading State -->
+                    <div id="loading" class="text-center py-8" style="display: none;">
+                        <div class="loading-spinner mx-auto mb-4"></div>
+                        <p class="text-gray-600">Calculating BLEU score...</p>
+                    </div>
+                    
+                    <!-- Error State -->
+                    <div id="error" 
+                         class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700" 
+                         style="display: none;">
+                    </div>
+                    
+                    <!-- Results Display -->
+                    <div id="results" style="display: none;">
+                        <!-- Main Score -->
+                        <div class="text-center mb-6">
+                            <div class="text-6xl font-bold mb-2">
+                                <span id="score" class="score-good">0.0000</span>
+                            </div>
+                            <div class="text-xl">
+                                <span id="score-meaning" class="score-good">Good</span> Quality
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Metrics -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-lg p-4 text-center">
+                                <div class="text-sm text-gray-600 mb-1">Brevity Penalty</div>
+                                <div class="text-2xl font-bold text-gray-800">
+                                    <span id="brevity-penalty">0.0000</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4 text-center">
+                                <div class="text-sm text-gray-600 mb-1">Length Ratio</div>
+                                <div class="text-2xl font-bold text-gray-800">
+                                    <span id="length-ratio">0.0000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- N-gram Precisions -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-3 text-gray-800">N-gram Precisions</h3>
+                            <div id="ngram-precisions">
+                                <!-- Dynamic content will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Default State -->
+                    <div id="default-message" class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-4">📊</div>
+                        <p>Enter your predictions and references above, then click "Calculate BLEU Score" to see results.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- About Section -->
+            <div class="mt-12 bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">About BLEU Score</h2>
+                <div class="prose max-w-none text-gray-600">
+                    <p class="mb-4">
+                        <strong>BLEU (Bilingual Evaluation Understudy)</strong> is a metric for automatically evaluating machine-translated text. 
+                        The metric compares a candidate translation with one or more reference translations.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Score Interpretation</h3>
+                            <ul class="space-y-1">
+                                <li><span class="score-excellent font-semibold">0.8-1.0:</span> Excellent quality</li>
+                                <li><span class="score-good font-semibold">0.6-0.8:</span> Good quality</li>
+                                <li><span class="score-fair font-semibold">0.4-0.6:</span> Fair quality</li>
+                                <li><span class="score-poor font-semibold">0.0-0.4:</span> Poor quality</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Key Features</h3>
+                            <ul class="space-y-1">
+                                <li>• N-gram precision calculation</li>
+                                <li>• Brevity penalty for short translations</li>
+                                <li>• Fast Rust-powered computation</li>
+                                <li>• Multiple reference support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-300">
+                Powered by <a href="https://github.com/shenxiangzhuang/bleuscore" target="_blank" class="text-blue-400 hover:text-blue-300">BleuScore</a> 
+                | Made with ❤️ for the NLP community
+            </p>
+        </div>
+    </footer>
+</body>
+</html> 
