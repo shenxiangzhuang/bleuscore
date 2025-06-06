@@ -48,7 +48,7 @@ lint = ["black", "ruff~=0.11.2"]
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-source = "python"
-module-name = "bleuscore.bleuscore"
+module-name = "bleuscore._bleuscore"
 #bindings = 'pyo3'
 
 [tool.black]
