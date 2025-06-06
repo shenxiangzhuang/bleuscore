@@ -15,8 +15,8 @@ name = "bleuscore"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-cached = { workspace = true }
-regex = { workspace = true }
-lazy_static = { workspace = true }
-rayon = { workspace = true }
-ahash = { workspace = true }
+cached = "0.55.1"
+regex = "1.10.4"
+lazy_static = "1.4.0"
+rayon = "1.10.0"
+ahash = "0.8.11"

@@ -6,10 +6,3 @@ exclude = [
     "bindings/python",
 #    "bindings/js",
 ]
-
-[dependencies]
-cached = "0.55.1"
-regex = "1.10.4"
-lazy_static = "1.4.0"
-rayon = "1.10.0"
-ahash = "0.8.11"
