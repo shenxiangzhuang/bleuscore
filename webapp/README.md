@@ -1,19 +1,123 @@
-# BleuScore Online - Web Application
+# BleuScore Online - Fast BLEU Score Calculator
 
-A fast, modern web application for calculating BLEU scores using the `bleuscore-js` npm package. Perfect for evaluating machine translation quality directly in your browser.
-
-## ✨ Features
-
-- **Fast Calculation**: Powered by `bleuscore-js` for efficient BLEU score computation
-- **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
-- **GitHub Pages Ready**: Static application that works perfectly on GitHub Pages
-- **Real-time Results**: Instant BLEU score calculation with detailed metrics
-- **N-gram Analysis**: Support for 1-gram to 5-gram precision analysis
-- **Mobile Friendly**: Responsive design that works on all devices
+A modern web application for calculating BLEU scores using WebAssembly-powered computation.
 
 ## 🚀 Live Demo
 
-Visit the live application: [BleuScore Online](https://your-username.github.io/bleuscore/webapp/)
+Visit the live application: **[https://shenxiangzhuang.github.io/bleuscore/](https://shenxiangzhuang.github.io/bleuscore/)**
+
+## ✨ Features
+
+- **Fast Computation**: Powered by Rust WebAssembly for optimal performance
+- **Modern UI**: Clean, responsive design with Tailwind CSS
+- **Real-time Calculation**: Instant BLEU score computation
+- **Multiple N-grams**: Support for 1-gram to 5-gram precision
+- **Smoothing Options**: Optional smoothing for better scores
+- **Detailed Metrics**: Complete breakdown including brevity penalty and precision bars
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js 18 or higher
+- npm
+
+### Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Build for production
+npm run build
+```
+
+The development server will start at `http://localhost:8080` with hot reload enabled.
+
+### Project Structure
+
+```
+webapp/
+├── app.js          # Main application logic
+├── index.html      # HTML template
+├── package.json    # Dependencies and scripts
+├── webpack.config.js # Webpack configuration
+└── dist/           # Built files (generated)
+```
+
+## 📦 Deployment
+
+### GitHub Pages (Automatic)
+
+The application automatically deploys to GitHub Pages when changes are pushed to the main branch:
+
+1. **Push to main branch** - triggers GitHub Actions workflow
+2. **Build process** - webpack builds the production bundle
+3. **Deploy** - files are automatically deployed to GitHub Pages
+
+### Manual Deployment
+
+```bash
+# Build for production
+npm run build
+
+# The dist/ folder contains all files needed for deployment
+```
+
+## 🧪 Usage
+
+1. **Enter Predictions**: Add your machine translation outputs (one per line)
+2. **Enter References**: Add reference translations (one per line)
+3. **Configure Settings**: 
+   - Choose N-gram order (1-5)
+   - Enable/disable smoothing
+4. **Calculate**: Click "Calculate BLEU Score" or press Ctrl+Enter
+5. **View Results**: See detailed scores, metrics, and precision breakdown
+
+## 🔧 Configuration
+
+### Webpack
+
+The webpack configuration supports both development and production modes:
+
+- **Development**: Hot reload, source maps, unminified output
+- **Production**: Minified output, content hashing, optimized chunks
+
+### Environment Variables
+
+- Production builds automatically set `publicPath` to `/bleuscore/` for GitHub Pages
+- Development uses root path `/` for local development
+
+## 📊 BLEU Score Interpretation
+
+| Score Range | Quality Level |
+|-------------|---------------|
+| 0.8 - 1.0   | Excellent     |
+| 0.6 - 0.8   | Good          |
+| 0.4 - 0.6   | Fair          |
+| 0.0 - 0.4   | Poor          |
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test locally with `npm start`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- **BleuScore**: Built with the [bleuscore-js](https://www.npmjs.com/package/bleuscore-js) WebAssembly package
+- **UI Framework**: [Tailwind CSS](https://tailwindcss.com/)
+- **Bundler**: [Webpack](https://webpack.js.org/)
+- **Deployment**: [GitHub Pages](https://pages.github.com/)
 
 ## 📊 What is BLEU Score?
 
@@ -114,24 +218,6 @@ The cat is sitting on the mat.
 Today is a beautiful day.
 Machine translation performs well.
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with [bleuscore-js](https://www.npmjs.com/package/bleuscore-js)
-- Powered by the [BleuScore](https://github.com/shenxiangzhuang/bleuscore) Rust implementation
-- UI design inspired by modern web applications
 
 ## 🔗 Related Links
 
