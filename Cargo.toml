@@ -4,5 +4,5 @@ members = [
 ]
 exclude = [
     "bindings/python",
-#    "bindings/js",
+    "bindings/js",
 ]
