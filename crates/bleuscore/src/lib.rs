@@ -39,6 +39,6 @@ println!("result: {:?}", res);
 #![feature(test)]
 extern crate test;
 
-pub mod tokenizer;
 pub mod bleu;
 pub mod ngram;
+pub mod tokenizer;
