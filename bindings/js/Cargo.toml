@@ -12,3 +12,5 @@ bleuscore = { version = "0.1.3", path = "../../crates/bleuscore" }
 wasm-bindgen = "0.2.100"
 getrandom = { version = "0.3", features = ["wasm_js"] }
 js-sys = "0.3.77"
+tsify = "0.5.5"
+serde = { version = "1.0", features = ["derive"] }

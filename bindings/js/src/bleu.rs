@@ -1,5 +1,7 @@
 use wasm_bindgen::prelude::*;
-use js_sys::{Array, JsString, Object};
+use js_sys::Array;
+use tsify::Tsify;
+use serde::{Serialize, Deserialize};
 
 #[wasm_bindgen]
 extern "C" {
@@ -21,16 +23,25 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
+#[derive(Debug, Default, Tsify, Serialize, Deserialize)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct BleuScore {
+    pub bleu: f64,
+    pub precisions: Vec<f64>,
+    pub brevity_penalty: f64,
+    pub length_ratio: f64,
+    pub translation_length: usize,
+    pub reference_length: usize,
+}
 
 #[wasm_bindgen]
 pub fn compute_score(
-    references: &JsValue,
-    predictions: &JsValue,
+    references_js_array: &Array,
+    predictions_js_array: &Array,
     max_order: usize,
     smooth: bool,
-) -> Result<JsValue, JsValue> {
+) -> Result<BleuScore, JsValue> {
     // Convert JsValue to Rust Vec<Vec<String>>
-    let references_js_array = Array::from(references);
     let mut references_vec: Vec<Vec<String>> = Vec::new();
 
     for i in 0..references_js_array.length() {
@@ -47,19 +58,20 @@ pub fn compute_score(
     console_log!("references_vec: {:?}", references_vec);
 
     // Convert JsValue to Rust Vec<String>
-    let predictions_js_array = Array::from(predictions);
     let mut predictions_vec: Vec<String> = Vec::new();
     for i in 0..predictions_js_array.length() {
         predictions_vec.push(predictions_js_array.get(i).as_string().unwrap_or_default());
     }
     console_log!("predictions_vec: {:?}", predictions_vec);
 
-    let bleu_result = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth);
-    console_log!("bleu_result: {:?}", bleu_result);
-    
-    let result = Object::new();
-    js_sys::Reflect::set(&result, &"bleu".into(), &bleu_result.bleu.into())?;
-    js_sys::Reflect::set(&result, &"length_ratio".into(), &bleu_result.length_ratio.into())?;
-
-    Ok(result.into())
+    let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth);
+    console_log!("bleu_result: {:?}", res);
+    Ok(BleuScore{
+        bleu: res.bleu,
+        precisions: res.precisions,
+        brevity_penalty: res.brevity_penalty,
+        length_ratio: res.length_ratio,
+        translation_length: res.translation_length,
+        reference_length: res.reference_length,
+    })
 }
