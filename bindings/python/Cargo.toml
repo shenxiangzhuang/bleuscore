@@ -1,8 +1,14 @@
 [package]
-name = "bleuscore-python"
+name = "bleuscore-py"
+version.workspace = true
+authors.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+keywords.workspace = true
+description.workspace = true
 publish = false
-version = "0.1.3"
-edition = "2024"
 
 [dependencies]
 bleuscore = { version = "0.1.3", path = "../../crates/bleuscore" }
