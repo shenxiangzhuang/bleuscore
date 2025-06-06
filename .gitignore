@@ -1,5 +1,6 @@
 # .so file
 *.so
+uv.lock
 
 __pycache__
 .hypothesis

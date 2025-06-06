@@ -13,8 +13,7 @@ bleuscore = "*"
 # Features:
 
 - Tokenized BLEU score calculation like
-[huggingface evaluate](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/bleu.py)
-and [sacrebleu](https://github.com/mjpost/sacrebleu)
+[huggingface evaluate](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/bleu.py).
 
 
 # Basic usage:
