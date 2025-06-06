@@ -1,6 +1,4 @@
-import { greet, compute_score } from './pkg';
-
-greet('World');
+import {compute_score } from './pkg';
 
 let bleu_result = compute_score(
     [

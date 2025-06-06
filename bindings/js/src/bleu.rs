@@ -1,11 +1,18 @@
 use wasm_bindgen::prelude::*;
-use js_sys::Array;
 use tsify::Tsify;
 use serde::{Serialize, Deserialize};
 
 #[wasm_bindgen]
 extern "C" {
-    fn alert(s: &str);
+    /// Custom type for `Vec<String>`.
+    #[wasm_bindgen(typescript_type = "string[]")]
+    #[derive(Debug)]
+    pub type VecString;
+
+    /// Custom type for `Vec<Vec<String>>`.
+    #[wasm_bindgen(typescript_type = "string[][]")]
+    #[derive(Debug)]
+    pub type VecVecString;
 
     // Use `js_namespace` here to bind `console.log(..)` instead of just
     // `log(..)`
@@ -13,10 +20,21 @@ extern "C" {
     pub fn log(s: &str);
 }
 
-#[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
+impl VecString {
+    /// Convert to a `Vec<String>`.
+    pub fn convert(self) -> Result<Vec<String>, JsError> {
+        serde_wasm_bindgen::from_value(self.into())
+            .map_err(|_| JsError::new("TypeError: expected array of string"))
+    }
 }
+
+impl VecVecString {
+    pub fn convert(self) -> Result<Vec<Vec<String>>, JsError> {
+        serde_wasm_bindgen::from_value(self.into())
+            .map_err(|_| JsError::new("TypeError: expected array of string arrays"))
+    }
+}
+
 macro_rules! console_log {
     // Note that this is using the `log` function imported above during
     // `bare_bones`
@@ -36,32 +54,17 @@ pub struct BleuScore {
 
 #[wasm_bindgen]
 pub fn compute_score(
-    references_js_array: &Array,
-    predictions_js_array: &Array,
+    references_js_array: VecVecString,
+    predictions_js_array: VecString,
     max_order: usize,
     smooth: bool,
-) -> Result<BleuScore, JsValue> {
+) -> Result<BleuScore, JsError> {
     // Convert JsValue to Rust Vec<Vec<String>>
-    let mut references_vec: Vec<Vec<String>> = Vec::new();
-
-    for i in 0..references_js_array.length() {
-        let inner_js_array = Array::from(&references_js_array.get(i));
-        let mut inner_vec: Vec<String> = Vec::new();
-
-        for j in 0..inner_js_array.length() {
-            let js_str = inner_js_array.get(j);
-            let rust_str = js_str.as_string().unwrap_or_default();
-            inner_vec.push(rust_str);
-        }
-        references_vec.push(inner_vec);
-    }
+    let references_vec: Vec<Vec<String>> = references_js_array.convert()?;
     console_log!("references_vec: {:?}", references_vec);
 
     // Convert JsValue to Rust Vec<String>
-    let mut predictions_vec: Vec<String> = Vec::new();
-    for i in 0..predictions_js_array.length() {
-        predictions_vec.push(predictions_js_array.get(i).as_string().unwrap_or_default());
-    }
+    let predictions_vec: Vec<String> = predictions_js_array.convert()?;
     console_log!("predictions_vec: {:?}", predictions_vec);
 
     let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth);
