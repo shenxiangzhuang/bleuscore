@@ -17,7 +17,7 @@ description = "A fast bleu score calculator"
 keywords = ["NLP", "Tokenizer", "BLEU", "DeepLearning"]
 
 [workspace.dependencies]
-cached = "0.55.1"
+cached = "0.56.0"
 regex = "1.10.4"
 lazy_static = "1.4.0"
 rayon = "1.10.0"
