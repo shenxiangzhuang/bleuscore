@@ -14,6 +14,6 @@ publish = false
 bleuscore = { version = ">=0.1.4", path = "../../crates/bleuscore" }
 
 [dependencies.pyo3]
-version = "0.25.0"
+version = "0.27.1"
 # "abi3-py38" tells pyo3 (and maturin) to build using the stable ABI with minimum Python version 3.8
 features = ["abi3-py38"]
