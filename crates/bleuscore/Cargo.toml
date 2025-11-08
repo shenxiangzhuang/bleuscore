@@ -22,3 +22,7 @@ lazy_static.workspace = true
 rayon.workspace = true
 ahash.workspace = true
 getrandom.workspace = true
+
+[features]
+# Enable nightly test crate for benchmarking
+nightly-test = []
