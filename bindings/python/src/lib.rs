@@ -25,9 +25,9 @@ fn compute(
     predictions: Vec<String>,
     max_order: usize,
     smooth: bool,
-) -> PyResult<PyObject> {
+) -> PyResult<Py<PyAny>> {
     let bleu = compute_score(&references, &predictions, max_order, smooth);
-    Python::with_gil(|py| {
+    Python::attach(|py| {
         let bleu_dict = PyDict::new(py);
         bleu_dict.set_item("bleu", bleu.bleu)?;
         bleu_dict.set_item("precisions", bleu.precisions)?;
