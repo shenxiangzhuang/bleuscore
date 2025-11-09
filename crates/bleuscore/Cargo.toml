@@ -23,6 +23,21 @@ rayon.workspace = true
 ahash.workspace = true
 getrandom.workspace = true
 
-[features]
-# Enable nightly test crate for benchmarking
-nightly-test = []
+[dev-dependencies]
+divan = { version = "4.1.0", package = "codspeed-divan-compat" }
+
+[[bench]]
+name = "bleu_bench"
+harness = false
+
+[[bench]]
+name = "tokenizer_bench"
+harness = false
+
+[[bench]]
+name = "ngram_bench"
+harness = false
+
+[[bench]]
+name = "e2e_bench"
+harness = false

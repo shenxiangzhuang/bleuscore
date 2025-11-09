@@ -36,10 +36,6 @@ println!("result: {:?}", res);
 // brevity_penalty: 1.0, length_ratio: 1.0, translation_length: 4, reference_length: 4 }
 ```
 !*/
-#![cfg_attr(feature = "nightly-test", feature(test))]
-
-#[cfg(feature = "nightly-test")]
-extern crate test;
 
 pub mod bleu;
 pub mod ngram;
