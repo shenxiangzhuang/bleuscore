@@ -145,6 +145,7 @@ mod test {
 }
 
 #[cfg(test)]
+#[cfg(feature = "nightly-test")]
 mod benchmark {
     use crate::tokenizer;
     use crate::tokenizer::Tokenizer;

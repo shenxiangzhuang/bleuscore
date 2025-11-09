@@ -56,6 +56,7 @@ mod test {
 }
 
 #[cfg(test)]
+#[cfg(feature = "nightly-test")]
 mod benchmark {
     use crate::ngram::get_token_ngram_counter;
     use test::Bencher;

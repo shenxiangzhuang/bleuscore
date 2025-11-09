@@ -178,6 +178,7 @@ mod test {
 }
 
 #[cfg(test)]
+#[cfg(feature = "nightly-test")]
 mod benchmark {
     use crate::bleu::compute_score;
     use test::Bencher;
