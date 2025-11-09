@@ -23,7 +23,7 @@
     "url": "https://github.com/shenxiangzhuang/bleuscore.git"
   },
   "dependencies": {
-    "bleuscore-js": "^0.1.4"
+    "bleuscore-js": "^0.1.5"
   },
   "devDependencies": {
     "html-webpack-plugin": "^5.5.0",
