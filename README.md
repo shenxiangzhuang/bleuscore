@@ -1,33 +1,29 @@
 # bleuscore
 
-[![codecov](https://codecov.io/gh/shenxiangzhuang/bleuscore/graph/badge.svg?token=ckgU5oGbxf)](https://codecov.io/gh/shenxiangzhuang/bleuscore)
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/bleuscore)](https://crates.io/crates/bleuscore)
 [![PyPI - Version](https://img.shields.io/pypi/v/bleuscore)](https://pypi.org/project/bleuscore/)
 [![npm version](https://img.shields.io/npm/v/bleuscore-js)](https://www.npmjs.com/package/bleuscore-js)
 [![docs.rs](https://img.shields.io/docsrs/bleuscore)](https://docs.rs/bleuscore/0.1.3/bleuscore/)
-
+[![codecov](https://codecov.io/gh/shenxiangzhuang/bleuscore/graph/badge.svg?token=ckgU5oGbxf)](https://codecov.io/gh/shenxiangzhuang/bleuscore)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CodSpeed Badge](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/shenxiangzhuang/bleuscore)
 
 [`bleuscore`](https://github.com/shenxiangzhuang/bleuscore)
-is a fast BLEU score calculator written in rust.
+is a fast BLEU score calculator written in rust. You can check try the web demo [here](https://datahonor.com/bleuscore/) for a quick experience.
+
 
 ## Installation
 The python package has been published to [pypi](https://pypi.org/project/bleuscore/),
 so we can install it directly with many ways: 
 
+- `uv`
+    ```bash
+    uv add bleuscore
+    ```
+
 - `pip`
     ```bash
     pip install bleuscore
-    ```
-
-- `poetry`
-    ```bash
-    poetry add bleuscore
-    ```
-
-- `uv`
-    ```bash
-    uv pip install bleuscore
     ```
 
 ## Quick Start
