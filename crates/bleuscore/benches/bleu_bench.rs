@@ -19,7 +19,7 @@ fn bleu_single() {
 fn bleu_batch(n: usize) {
     let max_order: usize = 4;
     let smooth: bool = true;
-    
+
     let mut references: Vec<Vec<String>> = Vec::with_capacity(n);
     references.resize_with(n, || vec!["Hello, World!".to_string()]);
 

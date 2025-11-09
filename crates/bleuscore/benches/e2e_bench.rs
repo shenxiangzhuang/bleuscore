@@ -11,10 +11,8 @@ fn e2e_single_sentence() {
     let references: Vec<Vec<String>> = vec![vec![
         "The quick brown fox jumps over the lazy dog".to_string()
     ]];
-    let predictions: Vec<String> = vec![
-        "The fast brown fox leaps over the lazy dog".to_string()
-    ];
-    
+    let predictions: Vec<String> = vec!["The fast brown fox leaps over the lazy dog".to_string()];
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -26,10 +24,8 @@ fn e2e_multiple_references() {
         "A fast brown fox leaps over a sleeping dog".to_string(),
         "The brown fox quickly jumps over the dog".to_string(),
     ]];
-    let predictions: Vec<String> = vec![
-        "The fast brown fox leaps over the lazy dog".to_string()
-    ];
-    
+    let predictions: Vec<String> = vec!["The fast brown fox leaps over the lazy dog".to_string()];
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -43,7 +39,7 @@ fn e2e_batch_realistic(batch_size: usize) {
         "Deep learning models achieve state-of-the-art results in NLP tasks".to_string(),
         "Neural networks can learn complex patterns from data".to_string(),
     ];
-    
+
     let sample_predictions = vec![
         "The fast brown fox leaps over the lazy dog".to_string(),
         "Machine learning transforms natural language processing".to_string(),
@@ -51,15 +47,15 @@ fn e2e_batch_realistic(batch_size: usize) {
         "Deep learning achieves great results in NLP".to_string(),
         "Neural nets learn complex patterns from data".to_string(),
     ];
-    
+
     let mut references: Vec<Vec<String>> = Vec::with_capacity(batch_size);
     let mut predictions: Vec<String> = Vec::with_capacity(batch_size);
-    
+
     for i in 0..batch_size {
         references.push(vec![sample_references[i % sample_references.len()].clone()]);
         predictions.push(sample_predictions[i % sample_predictions.len()].clone());
     }
-    
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -68,7 +64,7 @@ fn e2e_batch_realistic(batch_size: usize) {
 fn e2e_short_texts() {
     let references: Vec<Vec<String>> = vec![vec!["Hi".to_string()]];
     let predictions: Vec<String> = vec!["Hello".to_string()];
-    
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -87,7 +83,7 @@ fn e2e_long_texts() {
         BLEU scores range from 0 to 1, with 1 being perfect. \
         Though widely used, BLEU has limitations like not capturing semantics and favoring shorter outputs.".to_string()
     ];
-    
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -97,7 +93,7 @@ fn e2e_perfect_match() {
     let text = "The quick brown fox jumps over the lazy dog".to_string();
     let references: Vec<Vec<String>> = vec![vec![text.clone()]];
     let predictions: Vec<String> = vec![text];
-    
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -107,10 +103,9 @@ fn e2e_complete_mismatch() {
     let references: Vec<Vec<String>> = vec![vec![
         "The quick brown fox jumps over the lazy dog".to_string()
     ]];
-    let predictions: Vec<String> = vec![
-        "Python programming language machine learning AI".to_string()
-    ];
-    
+    let predictions: Vec<String> =
+        vec!["Python programming language machine learning AI".to_string()];
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -118,12 +113,11 @@ fn e2e_complete_mismatch() {
 #[divan::bench]
 fn e2e_special_chars() {
     let references: Vec<Vec<String>> = vec![vec![
-        r#"Hello, "World"! How are you? I'm fine, thanks & you?"#.to_string()
+        r#"Hello, "World"! How are you? I'm fine, thanks & you?"#.to_string(),
     ]];
-    let predictions: Vec<String> = vec![
-        r#"Hello, "World"! How are you? I am fine, thanks & you?"#.to_string()
-    ];
-    
+    let predictions: Vec<String> =
+        vec![r#"Hello, "World"! How are you? I am fine, thanks & you?"#.to_string()];
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
@@ -132,24 +126,20 @@ fn e2e_special_chars() {
 fn e2e_translation_scenario() {
     // Simulate English to simplified English translation
     let references: Vec<Vec<String>> = vec![vec![
-        "The committee has decided to postpone the meeting until next week.".to_string()
+        "The committee has decided to postpone the meeting until next week.".to_string(),
     ]];
-    let predictions: Vec<String> = vec![
-        "The committee decided to delay the meeting until next week.".to_string()
-    ];
-    
+    let predictions: Vec<String> =
+        vec!["The committee decided to delay the meeting until next week.".to_string()];
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }
 
 /// Benchmark with HTML entities (common in web-scraped data)
 #[divan::bench]
 fn e2e_html_entities() {
-    let references: Vec<Vec<String>> = vec![vec![
-        r#"&quot;Hello&quot; &amp; &lt;World&gt;"#.to_string()
-    ]];
-    let predictions: Vec<String> = vec![
-        r#"&quot;Hello&quot; and &lt;World&gt;"#.to_string()
-    ];
-    
+    let references: Vec<Vec<String>> =
+        vec![vec![r#"&quot;Hello&quot; &amp; &lt;World&gt;"#.to_string()]];
+    let predictions: Vec<String> = vec![r#"&quot;Hello&quot; and &lt;World&gt;"#.to_string()];
+
     bleuscore::compute_score(&references, &predictions, 4, true);
 }

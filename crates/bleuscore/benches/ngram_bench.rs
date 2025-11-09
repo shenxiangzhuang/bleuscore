@@ -8,10 +8,7 @@ fn main() {
 /// Benchmark n-gram counter with short token sequence
 #[divan::bench]
 fn ngram_short() {
-    let tokens: Vec<String> = vec![
-        "a".to_string(),
-        "b".to_string(),
-    ];
+    let tokens: Vec<String> = vec!["a".to_string(), "b".to_string()];
     let max_order = 4;
 
     get_token_ngram_counter(&tokens, max_order);
@@ -91,9 +88,7 @@ fn ngram_high_overlap() {
 /// Benchmark n-gram counter with unique tokens (no overlap)
 #[divan::bench]
 fn ngram_no_overlap() {
-    let tokens: Vec<String> = (0..20)
-        .map(|i| format!("word{}", i))
-        .collect();
+    let tokens: Vec<String> = (0..20).map(|i| format!("word{}", i)).collect();
     let max_order = 4;
 
     get_token_ngram_counter(&tokens, max_order);
@@ -103,9 +98,28 @@ fn ngram_no_overlap() {
 #[divan::bench]
 fn ngram_realistic() {
     let tokens: Vec<String> = vec![
-        "the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog",
-        "and", "the", "dog", "was", "sleeping", "peacefully", "under", "the", "tree"
-    ].iter().map(|s| s.to_string()).collect();
+        "the",
+        "quick",
+        "brown",
+        "fox",
+        "jumps",
+        "over",
+        "the",
+        "lazy",
+        "dog",
+        "and",
+        "the",
+        "dog",
+        "was",
+        "sleeping",
+        "peacefully",
+        "under",
+        "the",
+        "tree",
+    ]
+    .iter()
+    .map(|s| s.to_string())
+    .collect();
     let max_order = 4;
 
     get_token_ngram_counter(&tokens, max_order);
