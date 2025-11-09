@@ -54,28 +54,3 @@ mod test {
         assert_eq!(counter.len(), 9);
     }
 }
-
-#[cfg(test)]
-#[cfg(feature = "nightly-test")]
-mod benchmark {
-    use crate::ngram::get_token_ngram_counter;
-    use test::Bencher;
-
-    #[bench]
-    fn bench_ngram(b: &mut Bencher) {
-        let tokens: Vec<String> = vec![
-            "a".to_string(),
-            "a".to_string(),
-            "b".to_string(),
-            "c".to_string(),
-        ];
-        let max_order = 4;
-
-        let iter_num: usize = 100;
-        b.iter(|| {
-            std::hint::black_box(for _ in 1..=iter_num {
-                get_token_ngram_counter(&tokens, max_order);
-            });
-        });
-    }
-}

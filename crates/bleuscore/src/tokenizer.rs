@@ -143,23 +143,3 @@ mod test {
         )
     }
 }
-
-#[cfg(test)]
-#[cfg(feature = "nightly-test")]
-mod benchmark {
-    use crate::tokenizer;
-    use crate::tokenizer::Tokenizer;
-    use test::Bencher;
-    #[bench]
-    fn bench_tokenizer(b: &mut Bencher) {
-        let tokenizer_regex = tokenizer::Tokenizer13a::new();
-        let line = "Hello, &quot;World!<skipped>";
-
-        let iter_num: usize = 100;
-        b.iter(|| {
-            std::hint::black_box(for _ in 1..=iter_num {
-                tokenizer_regex.tokenize(line);
-            });
-        });
-    }
-}
