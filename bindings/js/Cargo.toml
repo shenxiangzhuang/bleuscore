@@ -8,6 +8,7 @@ license.workspace = true
 edition.workspace = true
 keywords.workspace = true
 description.workspace = true
+readme.workspace = true
 publish = false
 
 [lib]
