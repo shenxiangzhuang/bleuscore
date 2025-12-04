@@ -32,7 +32,7 @@ def build_translation_pair(text: str, n: int = 3) -> Tuple[List[str], List[List[
     Here we just add some prefix to avoid the occurrence
     """
     text = f"test {text}"
-    references = [[text] for _ in range(n)]
+    references = [[text, f"{text} ."] for _ in range(n)]
     predictions = [shrink_string(shuffle_string(text)) for _ in range(n)]
 
     return predictions, references

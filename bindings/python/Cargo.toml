@@ -11,7 +11,8 @@ description.workspace = true
 publish = false
 
 [dependencies]
-bleuscore = { version = ">=0.1.5", path = "../../crates/bleuscore" }
+# this crate won't be published, we always use the local version
+bleuscore = { version = ">=0", path = "../../crates/bleuscore" }
 
 [dependencies.pyo3]
 version = "0.27.1"

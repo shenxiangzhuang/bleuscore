@@ -2,7 +2,7 @@ use crate::ngram::get_token_ngram_counter;
 use crate::tokenizer::{Tokenizer, Tokenizer13a};
 use ahash::AHashMap;
 use rayon::prelude::*;
-use std::cmp::min;
+use std::cmp::{max, min};
 use std::ops::Add;
 
 /// The BLEU score data struct
@@ -67,7 +67,7 @@ pub fn compute_score(
                 for (key, value) in reference_ngram_counts {
                     merged_ref_ngram_counts
                         .entry(key)
-                        .and_modify(|v| *v += value)
+                        .and_modify(|v| *v = max(*v, value))
                         .or_insert(value);
                 }
             }
@@ -174,5 +174,24 @@ mod test {
         let s1 = Stat(0, 1, vec![0, 1], vec![1, 2]);
         let s2 = Stat(1, 2, vec![1, 2], vec![3, 4]);
         assert_eq!(agg_stat(s1, s2), Stat(1, 3, vec![1, 3], vec![4, 6]));
+    }
+
+    #[test]
+    fn test_bleu_multi_ref() {
+        // Ref 1: "a"
+        // Ref 2: "a"
+        // Pred: "a a"
+        // Max ref count for "a" is 1.
+        // Pred count for "a" is 2.
+        // Clipped count is min(1, 2) = 1.
+        // Precision for 1-gram: 1/2 = 0.5.
+        let references: Vec<Vec<String>> = vec![vec!["a".to_string(), "a".to_string()]];
+        let predictions: Vec<String> = vec!["a a".to_string()];
+        let max_order: usize = 1;
+        let smooth: bool = false;
+        let res = compute_score(&references, &predictions, max_order, smooth);
+
+        // Precision should be 0.5
+        assert!((res.precisions[0] - 0.5).abs() < 1e-10);
     }
 }
