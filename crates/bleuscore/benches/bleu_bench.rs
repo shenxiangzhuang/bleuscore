@@ -22,7 +22,7 @@ fn bleu_single() {
 }
 
 /// Benchmark BLEU score computation with different batch sizes
-#[divan::bench(args = [10, 50, 100, 500, 1000], sample_count = 100, sample_size = 10)]
+#[divan::bench(args = [100, 500, 1000], sample_count = 100, sample_size = 10)]
 fn bleu_batch(n: usize) {
     let max_order: usize = 4;
     let smooth: bool = true;
