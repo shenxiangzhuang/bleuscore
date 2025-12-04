@@ -1,6 +1,5 @@
 /// End-to-end integration benchmarks testing the complete BLEU scoring pipeline
 /// These benchmarks simulate real-world usage scenarios
-
 use divan::black_box;
 
 fn main() {

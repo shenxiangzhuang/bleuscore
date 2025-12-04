@@ -12,7 +12,10 @@ fn ngram_short() {
     let tokens: Vec<String> = vec!["a".to_string(), "b".to_string()];
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with medium token sequence
@@ -26,7 +29,10 @@ fn ngram_medium() {
     ];
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with long token sequence
@@ -45,7 +51,10 @@ fn ngram_long() {
     ];
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with different max_order values
@@ -63,7 +72,10 @@ fn ngram_max_order(max_order: usize) {
         "dog".to_string(),
     ];
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with different token sequence lengths
@@ -74,7 +86,10 @@ fn ngram_varying_length(token_count: usize) {
         .collect();
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with repeated tokens (high overlap)
@@ -83,7 +98,10 @@ fn ngram_high_overlap() {
     let tokens: Vec<String> = vec!["a".to_string(); 20];
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with unique tokens (no overlap)
@@ -92,7 +110,10 @@ fn ngram_no_overlap() {
     let tokens: Vec<String> = (0..20).map(|i| format!("word{}", i)).collect();
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
 
 /// Benchmark n-gram counter with realistic sentence-like data
@@ -123,5 +144,8 @@ fn ngram_realistic() {
     .collect();
     let max_order = 4;
 
-    black_box(get_token_ngram_counter(black_box(&tokens), black_box(max_order)));
+    black_box(get_token_ngram_counter(
+        black_box(&tokens),
+        black_box(max_order),
+    ));
 }
