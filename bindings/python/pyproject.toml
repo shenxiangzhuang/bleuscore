@@ -40,7 +40,7 @@ Source = 'https://github.com/shenxiangzhuang/bleuscore'
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-sugar", "hypothesis", "evaluate", "sacrebleu"]
-lint = ["black", "ruff~=0.11.2"]
+lint = ["black", "ruff"]
 #docs = []
 #dev = []
 
@@ -53,7 +53,6 @@ module-name = "bleuscore._bleuscore"
 
 [tool.black]
 line-length = 119
-target-version = "py38"
 
 [tool.ruff]
 line-length = 119
