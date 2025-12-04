@@ -57,7 +57,7 @@ def compute(
         BLEU score: 1.0000
     
     Note:
-        - Uses Tokenizer13a tokenization (same as SacreBLEU)
+        - Uses 13a tokenization (same as SacreBLEU)
         - All inputs are automatically tokenized
         - Empty inputs will raise an assertion error (fail-fast principle)
         - Number of predictions must equal number of reference groups
