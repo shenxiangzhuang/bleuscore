@@ -23,3 +23,16 @@ lazy_static = "1.4.0"
 rayon = "1.10.0"
 ahash = "0.8.11"
 getrandom = { version = "0.3", features = ["wasm_js"] }
+
+[profile.release]
+# Enable Link Time Optimization for better performance
+lto = true
+# Use a single codegen unit for better optimization (slower compile, faster runtime)
+codegen-units = 1
+# Strip symbols from binary to reduce size
+strip = true
+# Maximum optimization level
+opt-level = 3
+
+[profile.bench]
+inherits = "release"
