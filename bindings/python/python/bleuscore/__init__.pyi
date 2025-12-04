@@ -44,6 +44,7 @@ def compute(
         AssertionError: If references or predictions are empty, or if their lengths don't match.
         
     Example:
+        >>> import bleuscore
         >>> references = [
         ...     ["the cat is on the mat", "there is a cat on the mat"],
         ...     ["hello world"]
@@ -52,7 +53,7 @@ def compute(
         ...     "the cat is on the mat",
         ...     "hello world"
         ... ]
-        >>> result = compute(references, predictions, max_order=4, smooth=False)
+        >>> result = bleuscore.compute(references, predictions, max_order=4, smooth=False)
         >>> print(f"BLEU score: {result['bleu']:.4f}")
         BLEU score: 1.0000
     
@@ -78,6 +79,7 @@ def tokenizer_regex(line: str) -> List[str]:
         List of tokens
         
     Example:
+        >>> from bleuscore import tokenizer_regex
         >>> tokenizer_regex("Hello, World!")
         ['Hello', ',', 'World', '!']
         >>> tokenizer_regex("/usr/sbin/sendmail - 0 errors")
@@ -100,10 +102,9 @@ def tokenizer_13a(line: str) -> List[str]:
         List of tokens
         
     Example:
+        >>> from bleuscore import tokenizer_13a
         >>> tokenizer_13a("Hello, &quot;World!&quot;<skipped>")
         ['Hello', ',', '"', 'World', '!', '"']
-        >>> tokenizer_13a("Hello-\\nWorld")  # Handles newlines
-        ['Hello', 'World']
     
     Note:
         - Converts HTML entities: &quot; → ", &amp; → &, &lt; → <, &gt; → >
