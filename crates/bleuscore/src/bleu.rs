@@ -190,7 +190,7 @@ mod test {
         let max_order: usize = 1;
         let smooth: bool = false;
         let res = compute_score(&references, &predictions, max_order, smooth);
-        
+
         // Precision should be 0.5
         assert!((res.precisions[0] - 0.5).abs() < 1e-10);
     }
