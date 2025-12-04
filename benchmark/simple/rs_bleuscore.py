@@ -1,4 +1,4 @@
-from python import bleuscore
+import bleuscore
 from util import get_simulation_data, get_arg_parser
 
 
