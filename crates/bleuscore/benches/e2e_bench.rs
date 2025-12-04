@@ -1,23 +1,30 @@
 /// End-to-end integration benchmarks testing the complete BLEU scoring pipeline
 /// These benchmarks simulate real-world usage scenarios
 
+use divan::black_box;
+
 fn main() {
     divan::main();
 }
 
 /// Benchmark complete pipeline: tokenization + n-gram + BLEU computation
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_single_sentence() {
     let references: Vec<Vec<String>> = vec![vec![
         "The quick brown fox jumps over the lazy dog".to_string()
     ]];
     let predictions: Vec<String> = vec!["The fast brown fox leaps over the lazy dog".to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark with multiple references per prediction
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_multiple_references() {
     let references: Vec<Vec<String>> = vec![vec![
         "The quick brown fox jumps over the lazy dog".to_string(),
@@ -26,11 +33,16 @@ fn e2e_multiple_references() {
     ]];
     let predictions: Vec<String> = vec!["The fast brown fox leaps over the lazy dog".to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark realistic batch processing with varying sentence lengths
-#[divan::bench(args = [10, 50, 100])]
+#[divan::bench(args = [10, 50, 100], sample_count = 100, sample_size = 10)]
 fn e2e_batch_realistic(batch_size: usize) {
     let sample_references = vec![
         "The quick brown fox jumps over the lazy dog".to_string(),
@@ -56,20 +68,30 @@ fn e2e_batch_realistic(batch_size: usize) {
         predictions.push(sample_predictions[i % sample_predictions.len()].clone());
     }
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark with very short texts (edge case)
-#[divan::bench]
+#[divan::bench(sample_count = 1000, sample_size = 100)]
 fn e2e_short_texts() {
     let references: Vec<Vec<String>> = vec![vec!["Hi".to_string()]];
     let predictions: Vec<String> = vec!["Hello".to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark with very long texts
-#[divan::bench]
+#[divan::bench(sample_count = 200, sample_size = 20)]
 fn e2e_long_texts() {
     let references: Vec<Vec<String>> = vec![vec![
         "In the field of natural language processing, the Bilingual Evaluation Understudy (BLEU) score is a widely used metric for evaluating the quality of machine-translated text. \
@@ -84,21 +106,31 @@ fn e2e_long_texts() {
         Though widely used, BLEU has limitations like not capturing semantics and favoring shorter outputs.".to_string()
     ];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark perfect match scenario
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_perfect_match() {
     let text = "The quick brown fox jumps over the lazy dog".to_string();
     let references: Vec<Vec<String>> = vec![vec![text.clone()]];
     let predictions: Vec<String> = vec![text];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark complete mismatch scenario
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_complete_mismatch() {
     let references: Vec<Vec<String>> = vec![vec![
         "The quick brown fox jumps over the lazy dog".to_string()
@@ -106,11 +138,16 @@ fn e2e_complete_mismatch() {
     let predictions: Vec<String> =
         vec!["Python programming language machine learning AI".to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark with special characters and punctuation
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_special_chars() {
     let references: Vec<Vec<String>> = vec![vec![
         r#"Hello, "World"! How are you? I'm fine, thanks & you?"#.to_string(),
@@ -118,11 +155,16 @@ fn e2e_special_chars() {
     let predictions: Vec<String> =
         vec![r#"Hello, "World"! How are you? I am fine, thanks & you?"#.to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark translation-like scenario with multiple languages characteristics
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_translation_scenario() {
     // Simulate English to simplified English translation
     let references: Vec<Vec<String>> = vec![vec![
@@ -131,15 +173,25 @@ fn e2e_translation_scenario() {
     let predictions: Vec<String> =
         vec!["The committee decided to delay the meeting until next week.".to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
 
 /// Benchmark with HTML entities (common in web-scraped data)
-#[divan::bench]
+#[divan::bench(sample_count = 500, sample_size = 50)]
 fn e2e_html_entities() {
     let references: Vec<Vec<String>> =
         vec![vec![r#"&quot;Hello&quot; &amp; &lt;World&gt;"#.to_string()]];
     let predictions: Vec<String> = vec![r#"&quot;Hello&quot; and &lt;World&gt;"#.to_string()];
 
-    bleuscore::compute_score(&references, &predictions, 4, true);
+    black_box(bleuscore::compute_score(
+        black_box(&references),
+        black_box(&predictions),
+        black_box(4),
+        black_box(true),
+    ));
 }
