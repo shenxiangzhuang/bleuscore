@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: GitHub Pages
@@ -28,6 +31,7 @@ jobs:
           echo "<meta http-equiv=\"refresh\" content=\"0; url=bleuscore\">" > target/doc/index.html
 
       - name: Deploy Docs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
