@@ -18,6 +18,7 @@ fn bleu_single() {
         black_box(&predictions),
         black_box(max_order),
         black_box(smooth),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -38,6 +39,7 @@ fn bleu_batch(n: usize) {
         black_box(&predictions),
         black_box(max_order),
         black_box(smooth),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -53,6 +55,7 @@ fn bleu_max_order(max_order: usize) {
         black_box(&predictions),
         black_box(max_order),
         black_box(smooth),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -68,6 +71,7 @@ fn bleu_smoothing(smooth: bool) {
         black_box(&predictions),
         black_box(max_order),
         black_box(smooth),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -88,5 +92,6 @@ fn bleu_long_text() {
         black_box(&predictions),
         black_box(max_order),
         black_box(smooth),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }

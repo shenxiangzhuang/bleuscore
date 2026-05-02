@@ -30,6 +30,7 @@ let bleu_result = compute_score(
     ["hello there general kenobi", "foo bar foobar"],
     4,
     false,
+    "shortest",
 )
 initWasm();
 console.log(bleu_result)

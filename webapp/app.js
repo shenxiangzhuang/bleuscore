@@ -318,7 +318,7 @@ class BleuScoreApp {
             console.log('🔧 Formatted data:', { referencesArray, predictionsArray, maxOrder, smooth });
             
             // Call the WebAssembly function
-            const result = compute_score(referencesArray, predictionsArray, maxOrder, smooth);
+            const result = compute_score(referencesArray, predictionsArray, maxOrder, smooth, 'shortest');
             
             console.log('✅ BLEU calculation successful:', result);
             

@@ -68,22 +68,6 @@ pub fn compute_score(
     predictions_js_array: VecString,
     max_order: usize,
     smooth: bool,
-) -> Result<BleuScore, JsError> {
-    compute_score_with_ref_len_method(
-        references_js_array,
-        predictions_js_array,
-        max_order,
-        smooth,
-        "shortest",
-    )
-}
-
-#[wasm_bindgen]
-pub fn compute_score_with_ref_len_method(
-    references_js_array: VecVecString,
-    predictions_js_array: VecString,
-    max_order: usize,
-    smooth: bool,
     ref_len_method: &str,
 ) -> Result<BleuScore, JsError> {
     // Convert JsValue to Rust Vec<Vec<String>>
@@ -95,7 +79,7 @@ pub fn compute_score_with_ref_len_method(
     console_log!("predictions_vec: {:?}", predictions_vec);
 
     let method = parse_ref_len_method(ref_len_method)?;
-    let res = bleuscore::bleu::compute_score_with_ref_len_method(
+    let res = bleuscore::bleu::compute_score(
         &references_vec,
         &predictions_vec,
         max_order,
@@ -122,7 +106,13 @@ pub fn compute_score_direct(
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(
+        references,
+        predictions,
+        max_order,
+        smooth,
+        bleuscore::bleu::RefLenMethod::Shortest,
+    );
     BleuScore {
         bleu: res.bleu,
         precisions: res.precisions,
@@ -143,7 +133,13 @@ pub fn compute_score_debug(
 ) -> BleuScore {
     println!("Debug: references = {:?}", references);
     println!("Debug: predictions = {:?}", predictions);
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(
+        references,
+        predictions,
+        max_order,
+        smooth,
+        bleuscore::bleu::RefLenMethod::Shortest,
+    );
     println!("Debug: result = {:?}", res);
     BleuScore {
         bleu: res.bleu,
@@ -265,10 +261,11 @@ mod tests {
         // - VecString (predictions)
         // - usize (max_order)
         // - bool (smooth)
+        // - &str (ref_len_method)
         // And return Result<BleuScore, JsError>
 
         // We can't actually call it in non-WASM tests, but we can verify the types exist
-        let _: fn(VecVecString, VecString, usize, bool) -> Result<BleuScore, JsError> =
+        let _: fn(VecVecString, VecString, usize, bool, &str) -> Result<BleuScore, JsError> =
             compute_score;
     }
 

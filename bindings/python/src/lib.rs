@@ -1,4 +1,4 @@
-use bleuscore::bleu::{compute_score_with_ref_len_method, RefLenMethod};
+use bleuscore::bleu::{compute_score, RefLenMethod};
 use bleuscore::tokenizer::{Tokenizer, Tokenizer13a, TokenizerRegex};
 
 use pyo3::prelude::*;
@@ -46,8 +46,7 @@ fn compute(
     ref_len_method: &str,
 ) -> PyResult<Py<PyAny>> {
     let method = parse_ref_len_method(ref_len_method)?;
-    let bleu =
-        compute_score_with_ref_len_method(&references, &predictions, max_order, smooth, method);
+    let bleu = compute_score(&references, &predictions, max_order, smooth, method);
     Python::attach(|py| {
         let bleu_dict = PyDict::new(py);
         bleu_dict.set_item("bleu", bleu.bleu)?;

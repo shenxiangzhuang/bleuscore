@@ -61,22 +61,6 @@ pub fn compute_score(
     predictions: &[String],
     max_order: usize,
     smooth: bool,
-) -> BleuScore {
-    compute_score_with_ref_len_method(
-        references,
-        predictions,
-        max_order,
-        smooth,
-        RefLenMethod::Shortest,
-    )
-}
-
-/// compute the BLEU score with a configurable reference length selection method.
-pub fn compute_score_with_ref_len_method(
-    references: &[Vec<String>],
-    predictions: &[String],
-    max_order: usize,
-    smooth: bool,
     ref_len_method: RefLenMethod,
 ) -> BleuScore {
     let tokenizer = Tokenizer13a::new();
@@ -195,17 +179,20 @@ fn add_vectors<T: Add<Output = T>>(vec1: Vec<T>, vec2: Vec<T>) -> Vec<T> {
 
 #[cfg(test)]
 mod test {
-    use crate::bleu::{
-        add_vectors, agg_stat, closest_ref_len, compute_score, compute_score_with_ref_len_method,
-        RefLenMethod, Stat,
-    };
+    use crate::bleu::{add_vectors, agg_stat, closest_ref_len, compute_score, RefLenMethod, Stat};
     #[test]
     fn test_bleu() {
         let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
         let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
         let max_order: usize = 4;
         let smooth: bool = true;
-        let res = compute_score(&references, &predictions, max_order, smooth);
+        let res = compute_score(
+            &references,
+            &predictions,
+            max_order,
+            smooth,
+            RefLenMethod::Shortest,
+        );
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("result: {:?}", res);
         assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
@@ -237,7 +224,13 @@ mod test {
         let predictions: Vec<String> = vec!["a a".to_string()];
         let max_order: usize = 1;
         let smooth: bool = false;
-        let res = compute_score(&references, &predictions, max_order, smooth);
+        let res = compute_score(
+            &references,
+            &predictions,
+            max_order,
+            smooth,
+            RefLenMethod::Shortest,
+        );
 
         // Precision should be 0.5
         assert!((res.precisions[0] - 0.5).abs() < 1e-10);
@@ -258,14 +251,8 @@ mod test {
         ]];
         let predictions: Vec<String> = vec!["hello there general kenobi".to_string()];
 
-        let shortest = compute_score(&references, &predictions, 4, false);
-        let closest = compute_score_with_ref_len_method(
-            &references,
-            &predictions,
-            4,
-            false,
-            RefLenMethod::Closest,
-        );
+        let shortest = compute_score(&references, &predictions, 4, false, RefLenMethod::Shortest);
+        let closest = compute_score(&references, &predictions, 4, false, RefLenMethod::Closest);
 
         assert_eq!(shortest.reference_length, 3);
         assert_eq!(closest.reference_length, 4);

@@ -19,7 +19,7 @@ bleuscore = "*"
 # Basic usage:
 
 ```rust
-use bleuscore::{compute_score_with_ref_len_method, RefLenMethod};
+use bleuscore::{compute_score, RefLenMethod};
 
 // get the references and prediction data:
 let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
@@ -30,7 +30,7 @@ let max_order: usize = 4;
 let smooth: bool = true;
 
 // calculate the BLEU score:
-let res = compute_score_with_ref_len_method(
+let res = compute_score(
     &references,
     &predictions,
     max_order,
@@ -46,4 +46,4 @@ println!("result: {:?}", res);
 pub mod bleu;
 pub mod ngram;
 pub mod tokenizer;
-pub use bleu::{compute_score, compute_score_with_ref_len_method, RefLenMethod};
+pub use bleu::{compute_score, RefLenMethod};
