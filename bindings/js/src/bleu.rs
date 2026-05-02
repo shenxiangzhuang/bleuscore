@@ -330,4 +330,39 @@ mod tests {
         assert!(score.bleu <= 1.0);
         assert_eq!(score.precisions.len(), 2);
     }
+
+    #[test]
+    fn test_parse_ref_len_method_shortest_variants() {
+        assert!(matches!(
+            parse_ref_len_method("shortest"),
+            Ok(bleuscore::bleu::RefLenMethod::Shortest)
+        ));
+        assert!(matches!(
+            parse_ref_len_method("hf"),
+            Ok(bleuscore::bleu::RefLenMethod::Shortest)
+        ));
+    }
+
+    #[test]
+    fn test_parse_ref_len_method_closest_variants() {
+        assert!(matches!(
+            parse_ref_len_method("closest"),
+            Ok(bleuscore::bleu::RefLenMethod::Closest)
+        ));
+        assert!(matches!(
+            parse_ref_len_method("sacrebleu"),
+            Ok(bleuscore::bleu::RefLenMethod::Closest)
+        ));
+    }
+
+    #[test]
+    fn test_parse_ref_len_method_invalid() {
+        // JsError::new() panics on non-wasm targets, so we test via panic
+        // The function returns Err(JsError) for unknown values; on non-wasm the
+        // JsError construction itself panics, which also means it cannot return Ok.
+        let result = std::panic::catch_unwind(|| parse_ref_len_method("unknown"));
+        assert!(result.is_err(), "invalid method should not return Ok");
+        let result2 = std::panic::catch_unwind(|| parse_ref_len_method(""));
+        assert!(result2.is_err(), "empty method should not return Ok");
+    }
 }
