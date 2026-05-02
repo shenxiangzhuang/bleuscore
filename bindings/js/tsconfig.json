@@ -1,12 +1,18 @@
 {
-    "compilerOptions": {
-      "outDir": "./dist/",
-      "sourceMap": true,
-      "noImplicitAny": true,
-      "module": "es6",
-      "target": "es5",
-      "jsx": "react",
-      "allowJs": true,
-      "moduleResolution": "bundler"
-    }
-  }
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "es2017"],
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": true,
+    "strict": true,
+    "ignoreDeprecations": "6.0",
+    "sourceMap": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["index.js", "src/**/*"],
+  "exclude": ["dist", "node_modules"]
+}
