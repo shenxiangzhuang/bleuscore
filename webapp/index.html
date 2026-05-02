@@ -238,7 +238,7 @@
             border: 1px solid hsl(var(--border));
             border-radius: calc(var(--radius) - 2px);
             background-color: hsl(var(--muted));
-            width: 100%;
+            width: min(16rem, 100%);
         }
 
         .mode-option {
@@ -332,6 +332,57 @@
             color: hsl(var(--foreground));
             font-weight: 700;
         }
+
+        .config-bar {
+            border-bottom: 1px solid hsl(var(--border));
+            background-color: hsl(var(--card));
+        }
+
+        .config-panel {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .config-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 2.25rem;
+        }
+
+        .config-label {
+            margin: 0;
+            white-space: nowrap;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .config-ngram {
+            width: 4.75rem;
+            flex: 0 0 auto;
+        }
+
+        .config-smoothing {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .config-mode {
+            flex: 1 0 24rem;
+            min-width: 24rem;
+        }
+
+        .config-action {
+            margin-left: auto;
+            min-width: 12rem;
+            flex: 0 0 auto;
+        }
         
         .badge {
             display: inline-flex;
@@ -368,7 +419,7 @@
             border: 2px solid hsl(var(--border));
             border-radius: var(--radius);
             background-color: hsl(var(--background));
-            padding: 0.75rem;
+            padding: 0.625rem;
             margin-bottom: 0.5rem;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -402,7 +453,7 @@
             border-radius: var(--radius);
             background-color: hsl(var(--primary) / 0.03);
             color: hsl(var(--primary));
-            padding: 1rem;
+            padding: 0.625rem;
             width: 100%;
             transition: all 0.2s ease-in-out;
             cursor: pointer;
@@ -452,7 +503,7 @@
         
         .score-display {
             text-align: center;
-            padding: 1.5rem;
+            padding: 1rem;
         }
         
         .score-number {
@@ -496,8 +547,8 @@
         
         .sticky-sidebar {
             position: sticky;
-            top: 1rem;
-            max-height: calc(100vh - 2rem);
+            top: 0.75rem;
+            max-height: calc(100vh - 1.5rem);
             overflow-y: auto;
         }
         
@@ -601,6 +652,15 @@
                 font-size: 0.65rem;
                 padding: 0.25rem 0.35rem;
                 gap: 0.25rem;
+            }
+
+            .config-panel {
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .config-action {
+                margin-left: 0;
             }
         }
 
@@ -712,8 +772,54 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="max-w-6xl mx-auto px-4 py-6">
-            <div class="grid lg:grid-cols-2 gap-8">
+        <section class="config-bar">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="config-panel" aria-label="Configuration">
+                    <div class="config-group">
+                        <label for="ngram" class="label config-label">N-gram Order</label>
+                        <input type="number" id="ngram" class="input config-ngram" value="4" min="1" max="10">
+                    </div>
+
+                    <div class="config-group">
+                        <label class="label config-label">Smoothing</label>
+                        <div class="config-smoothing">
+                            <input type="checkbox" id="smoothing" class="checkbox">
+                            <label for="smoothing">Enable</label>
+                        </div>
+                    </div>
+
+                    <div class="config-group config-mode">
+                        <label class="label config-label">Reference Length Mode</label>
+                        <div class="mode-control">
+                            <div class="mode-switch" role="group" aria-label="Reference length mode">
+                                <button type="button" class="mode-option is-active" data-ref-len-method="shortest" aria-pressed="true">Shortest</button>
+                                <button type="button" class="mode-option" data-ref-len-method="closest" aria-pressed="false">Closest</button>
+                            </div>
+                            <div class="help-wrap">
+                                <button type="button" class="help-button" aria-label="Reference length mode help">?</button>
+                                <div class="help-tooltip" role="tooltip">
+                                    <div class="help-title">Reference length mode</div>
+                                    <div class="help-copy">
+                                        <strong>Shortest</strong> uses the shortest reference for brevity penalty and matches HuggingFace evaluate / TF NMT behavior.<br><br>
+                                        <strong>Closest</strong> uses the reference length closest to each prediction, with shorter winning ties, matching SacreBLEU / NIST mteval-v13a.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="calculate-btn" class="btn btn-primary config-action">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                        </svg>
+                        Calculate BLEU Score
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div class="grid lg:grid-cols-2 gap-4">
                 <!-- Left Side: Input Area -->
                 <div class="space-y-4">
                     <!-- Predictions & References -->
@@ -735,63 +841,6 @@
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
                                 Add Prediction
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Settings -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Configuration</h2>
-                            <p class="card-description">
-                                Adjust the BLEU score calculation parameters.
-                            </p>
-                        </div>
-                        <div class="card-content">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label for="ngram" class="label">N-gram Order</label>
-                                    <input type="number" id="ngram" class="input" value="4" min="1" max="10">
-                                </div>
-                                
-                                <div class="space-y-1">
-                                    <label class="label">Smoothing</label>
-                                    <div class="flex items-center space-x-2 pt-1">
-                                        <input type="checkbox" id="smoothing" class="checkbox">
-                                        <label for="smoothing" class="text-sm">Enable smoothing</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-3 space-y-1">
-                                <div class="flex items-center justify-between gap-2">
-                                    <label class="label mb-0">Reference Length Mode</label>
-                                    <div class="help-wrap">
-                                        <button type="button" class="help-button" aria-label="Reference length mode help">?</button>
-                                        <div class="help-tooltip" role="tooltip">
-                                            <div class="help-title">Reference length mode</div>
-                                            <div class="help-copy">
-                                                <strong>Shortest</strong> uses the shortest reference for brevity penalty and matches HuggingFace evaluate / TF NMT behavior.<br><br>
-                                                <strong>Closest</strong> uses the reference length closest to each prediction, with shorter winning ties, matching SacreBLEU / NIST mteval-v13a.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mode-control">
-                                    <div class="mode-switch" role="group" aria-label="Reference length mode">
-                                        <button type="button" class="mode-option is-active" data-ref-len-method="shortest" aria-pressed="true">Shortest</button>
-                                        <button type="button" class="mode-option" data-ref-len-method="closest" aria-pressed="false">Closest</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="section-divider"></div>
-                            
-                            <button id="calculate-btn" class="btn btn-primary w-full">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                                </svg>
-                                Calculate BLEU Score
                             </button>
                         </div>
                     </div>
