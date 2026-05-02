@@ -187,6 +187,33 @@ def test_sacrebleu_closest_differs_from_shortest():
     sacrebleu_result_compare(references, predictions, max_order=4)
 
 
+def test_ref_len_method_aliases():
+    predictions = ["hello there general kenobi"]
+    references = [["hello there !", "hello there general kenobi"]]
+
+    shortest = bleuscore.compute(references, predictions, ref_len_method="shortest")
+    hf = bleuscore.compute(references, predictions, ref_len_method="hf")
+    closest = bleuscore.compute(references, predictions, ref_len_method="closest")
+    sacrebleu = bleuscore.compute(references, predictions, ref_len_method="sacrebleu")
+
+    assert hf == shortest
+    assert sacrebleu == closest
+    assert shortest["reference_length"] == 3
+    assert closest["reference_length"] == 4
+
+
+def test_invalid_ref_len_method():
+    predictions = ["hello there general kenobi"]
+    references = [["hello there general kenobi"]]
+
+    try:
+        bleuscore.compute(references, predictions, ref_len_method="invalid")
+    except ValueError as exc:
+        assert "Unknown ref_len_method" in str(exc)
+    else:
+        raise AssertionError("invalid ref_len_method should raise ValueError")
+
+
 @settings(max_examples=500, deadline=datetime.timedelta(seconds=10))
 @given(
     st.text(

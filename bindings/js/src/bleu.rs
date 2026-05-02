@@ -41,6 +41,16 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
+fn parse_ref_len_method(value: &str) -> Result<bleuscore::bleu::RefLenMethod, JsError> {
+    match value {
+        "shortest" | "hf" => Ok(bleuscore::bleu::RefLenMethod::Shortest),
+        "closest" | "sacrebleu" => Ok(bleuscore::bleu::RefLenMethod::Closest),
+        other => Err(JsError::new(&format!(
+            "Unknown ref_len_method {other:?}. Valid values: \"shortest\", \"hf\", \"closest\", \"sacrebleu\"."
+        ))),
+    }
+}
+
 #[derive(Debug, Default, Tsify, Serialize, Deserialize)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct BleuScore {
@@ -59,6 +69,23 @@ pub fn compute_score(
     max_order: usize,
     smooth: bool,
 ) -> Result<BleuScore, JsError> {
+    compute_score_with_ref_len_method(
+        references_js_array,
+        predictions_js_array,
+        max_order,
+        smooth,
+        "shortest",
+    )
+}
+
+#[wasm_bindgen]
+pub fn compute_score_with_ref_len_method(
+    references_js_array: VecVecString,
+    predictions_js_array: VecString,
+    max_order: usize,
+    smooth: bool,
+    ref_len_method: &str,
+) -> Result<BleuScore, JsError> {
     // Convert JsValue to Rust Vec<Vec<String>>
     let references_vec: Vec<Vec<String>> = references_js_array.convert()?;
     console_log!("references_vec: {:?}", references_vec);
@@ -67,7 +94,14 @@ pub fn compute_score(
     let predictions_vec: Vec<String> = predictions_js_array.convert()?;
     console_log!("predictions_vec: {:?}", predictions_vec);
 
-    let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth, bleuscore::bleu::RefLenMethod::Shortest);
+    let method = parse_ref_len_method(ref_len_method)?;
+    let res = bleuscore::bleu::compute_score_with_ref_len_method(
+        &references_vec,
+        &predictions_vec,
+        max_order,
+        smooth,
+        method,
+    );
     console_log!("bleu_result: {:?}", res);
     Ok(BleuScore {
         bleu: res.bleu,
@@ -88,7 +122,7 @@ pub fn compute_score_direct(
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth, bleuscore::bleu::RefLenMethod::Shortest);
+    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
     BleuScore {
         bleu: res.bleu,
         precisions: res.precisions,
@@ -109,7 +143,7 @@ pub fn compute_score_debug(
 ) -> BleuScore {
     println!("Debug: references = {:?}", references);
     println!("Debug: predictions = {:?}", predictions);
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth, bleuscore::bleu::RefLenMethod::Shortest);
+    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
     println!("Debug: result = {:?}", res);
     BleuScore {
         bleu: res.bleu,
