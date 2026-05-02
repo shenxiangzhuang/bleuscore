@@ -228,35 +228,55 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            min-width: 0;
         }
 
         .mode-switch {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.25rem;
-            padding: 0.25rem;
+            gap: 0.2rem;
+            padding: 0.2rem;
             border: 1px solid hsl(var(--border));
             border-radius: calc(var(--radius) - 2px);
-            background-color: hsl(var(--muted));
-            width: min(16rem, 100%);
+            background-color: hsl(var(--background));
+            width: min(20rem, 100%);
+            box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.04);
         }
 
         .mode-option {
-            height: 2rem;
+            height: 2.15rem;
             border: 0;
             border-radius: calc(var(--radius) - 4px);
             background: transparent;
             color: hsl(var(--muted-foreground));
             cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font: inherit;
             transition: all 0.2s ease-in-out;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0 0.4rem;
+        }
+
+        .mode-name {
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        .mode-source {
+            border-radius: 9999px;
+            background-color: hsl(var(--muted));
+            color: hsl(var(--muted-foreground));
+            padding: 0.08rem 0.3rem;
+            font-size: 0.6rem;
+            font-weight: 700;
         }
 
         .mode-option:hover {
             color: hsl(var(--foreground));
-            background-color: hsl(var(--background) / 0.7);
+            background-color: hsl(var(--muted) / 0.7);
         }
 
         .mode-option.is-active {
@@ -265,14 +285,19 @@
             box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.2);
         }
 
+        .mode-option.is-active .mode-source {
+            background-color: hsl(var(--primary-foreground) / 0.18);
+            color: hsl(var(--primary-foreground));
+        }
+
         .help-wrap {
             position: relative;
             flex: 0 0 auto;
         }
 
         .help-button {
-            width: 2rem;
-            height: 2rem;
+            width: 2.15rem;
+            height: 2.15rem;
             border-radius: 9999px;
             border: 1px solid hsl(var(--border));
             background-color: hsl(var(--background));
@@ -335,14 +360,14 @@
 
         .config-bar {
             border-bottom: 1px solid hsl(var(--border));
-            background-color: hsl(var(--card));
+            background-color: hsl(var(--muted) / 0.45);
         }
 
         .config-panel {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
+            gap: 0.5rem;
+            padding: 0.6rem 0;
             overflow-x: auto;
             white-space: nowrap;
         }
@@ -350,14 +375,24 @@
         .config-group {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            min-height: 2.25rem;
+            gap: 0.45rem;
+            min-height: 2.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            background-color: hsl(var(--background));
+            padding: 0.35rem 0.45rem;
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.08);
         }
 
         .config-label {
             margin: 0;
             white-space: nowrap;
             color: hsl(var(--muted-foreground));
+            font-size: 0.68rem;
+            font-weight: 700;
+            max-width: 5.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .config-ngram {
@@ -374,14 +409,16 @@
         }
 
         .config-mode {
-            flex: 1 0 24rem;
-            min-width: 24rem;
+            flex: 1 0 30rem;
+            min-width: 30rem;
         }
 
         .config-action {
             margin-left: auto;
             min-width: 12rem;
             flex: 0 0 auto;
+            height: 2.75rem;
+            box-shadow: 0 6px 14px -10px hsl(var(--primary));
         }
         
         .badge {
@@ -792,8 +829,14 @@
                         <label class="label config-label">Reference Length Mode</label>
                         <div class="mode-control">
                             <div class="mode-switch" role="group" aria-label="Reference length mode">
-                                <button type="button" class="mode-option is-active" data-ref-len-method="shortest" aria-pressed="true">Shortest</button>
-                                <button type="button" class="mode-option" data-ref-len-method="closest" aria-pressed="false">Closest</button>
+                                <button type="button" class="mode-option is-active" data-ref-len-method="shortest" aria-pressed="true">
+                                    <span class="mode-name">Shortest</span>
+                                    <span class="mode-source">HuggingFace</span>
+                                </button>
+                                <button type="button" class="mode-option" data-ref-len-method="closest" aria-pressed="false">
+                                    <span class="mode-name">Closest</span>
+                                    <span class="mode-source">SacreBLEU</span>
+                                </button>
                             </div>
                             <div class="help-wrap">
                                 <button type="button" class="help-button" aria-label="Reference length mode help">?</button>
