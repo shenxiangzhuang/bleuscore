@@ -37,6 +37,16 @@
             --ring: 16 85% 45%;
             --radius: 0.5rem;
         }
+
+        body[data-ref-len-method="shortest"] {
+            --primary: 16 85% 45%;
+            --ring: 16 85% 45%;
+        }
+
+        body[data-ref-len-method="closest"] {
+            --primary: 202 83% 42%;
+            --ring: 202 83% 42%;
+        }
         
         * {
             border-color: hsl(var(--border));
@@ -212,6 +222,115 @@
             border-radius: 0.25rem;
             border: 1px solid hsl(var(--primary));
             background-color: hsl(var(--background));
+        }
+
+        .mode-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mode-switch {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.25rem;
+            padding: 0.25rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: calc(var(--radius) - 2px);
+            background-color: hsl(var(--muted));
+            width: 100%;
+        }
+
+        .mode-option {
+            height: 2rem;
+            border: 0;
+            border-radius: calc(var(--radius) - 4px);
+            background: transparent;
+            color: hsl(var(--muted-foreground));
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .mode-option:hover {
+            color: hsl(var(--foreground));
+            background-color: hsl(var(--background) / 0.7);
+        }
+
+        .mode-option.is-active {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.2);
+        }
+
+        .help-wrap {
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        .help-button {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            border: 1px solid hsl(var(--border));
+            background-color: hsl(var(--background));
+            color: hsl(var(--muted-foreground));
+            cursor: help;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .help-button:hover,
+        .help-button:focus-visible {
+            border-color: hsl(var(--primary));
+            color: hsl(var(--primary));
+            outline: none;
+        }
+
+        .help-tooltip {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            z-index: 20;
+            width: min(22rem, calc(100vw - 2rem));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            background-color: hsl(var(--popover));
+            color: hsl(var(--popover-foreground));
+            box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.35);
+            padding: 0.75rem;
+            opacity: 0;
+            transform: translateY(-0.25rem);
+            pointer-events: none;
+            transition: opacity 0.16s ease-in-out, transform 0.16s ease-in-out;
+        }
+
+        .help-wrap:hover .help-tooltip,
+        .help-wrap:focus-within .help-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .help-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .help-copy {
+            font-size: 0.72rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.4;
+        }
+
+        .help-copy strong {
+            color: hsl(var(--foreground));
+            font-weight: 700;
         }
         
         .badge {
@@ -552,7 +671,7 @@
         }
     </style>
 </head>
-<body>
+<body data-ref-len-method="shortest">
     <!-- Hero Section -->
     <div class="hero-section">
         <div class="max-w-6xl mx-auto px-4">
@@ -640,6 +759,28 @@
                                     <div class="flex items-center space-x-2 pt-1">
                                         <input type="checkbox" id="smoothing" class="checkbox">
                                         <label for="smoothing" class="text-sm">Enable smoothing</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 space-y-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="label mb-0">Reference Length Mode</label>
+                                    <div class="help-wrap">
+                                        <button type="button" class="help-button" aria-label="Reference length mode help">?</button>
+                                        <div class="help-tooltip" role="tooltip">
+                                            <div class="help-title">Reference length mode</div>
+                                            <div class="help-copy">
+                                                <strong>Shortest</strong> uses the shortest reference for brevity penalty and matches HuggingFace evaluate / TF NMT behavior.<br><br>
+                                                <strong>Closest</strong> uses the reference length closest to each prediction, with shorter winning ties, matching SacreBLEU / NIST mteval-v13a.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mode-control">
+                                    <div class="mode-switch" role="group" aria-label="Reference length mode">
+                                        <button type="button" class="mode-option is-active" data-ref-len-method="shortest" aria-pressed="true">Shortest</button>
+                                        <button type="button" class="mode-option" data-ref-len-method="closest" aria-pressed="false">Closest</button>
                                     </div>
                                 </div>
                             </div>
