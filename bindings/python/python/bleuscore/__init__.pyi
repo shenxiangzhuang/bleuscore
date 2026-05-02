@@ -4,7 +4,7 @@ Type stubs for bleuscore - Fast BLEU Score Calculator
 This file provides type hints for the Rust-based bleuscore library.
 """
 
-from typing import List, Dict, Union
+from typing import List, Dict, Literal, Union
 
 __version__: str
 
@@ -13,6 +13,7 @@ def compute(
     predictions: List[str],
     max_order: int = 4,
     smooth: bool = False,
+    ref_len_method: Literal["shortest", "hf", "closest", "sacrebleu"] = "shortest",
 ) -> Dict[str, Union[float, List[float], int]]:
     """
     Calculate BLEU score for machine translation predictions.
@@ -30,6 +31,13 @@ def compute(
                   Must be >= 1. Common values: 1, 2, 3, 4.
         smooth: Whether to apply smoothing to avoid zero precision scores (default: False).
                Smoothing adds 1 to numerator and denominator of precision calculations.
+        ref_len_method: Strategy for selecting the effective reference length when
+                       multiple references are provided per segment (default: "shortest").
+                       - "shortest" / "hf": shortest reference length
+                         (compatible with HuggingFace evaluate / TF NMT).
+                       - "closest" / "sacrebleu": reference length closest to hypothesis
+                         length; shorter wins on ties
+                         (compatible with SacreBLEU / NIST mteval-v13a).
     
     Returns:
         Dictionary containing:
@@ -38,10 +46,11 @@ def compute(
             - brevity_penalty (float): Penalty for short translations (0.0 to 1.0)
             - length_ratio (float): Ratio of translation length to reference length
             - translation_length (int): Total length of all predictions in tokens
-            - reference_length (int): Total length of closest references in tokens
+            - reference_length (int): Total length of selected references in tokens
     
     Raises:
         AssertionError: If references or predictions are empty, or if their lengths don't match.
+        ValueError: If ref_len_method is not one of the accepted values.
         
     Example:
         >>> import bleuscore

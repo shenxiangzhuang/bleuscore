@@ -1,4 +1,4 @@
-use bleuscore::bleu::compute_score;
+use bleuscore::bleu::{compute_score, RefLenMethod};
 use bleuscore::tokenizer::{Tokenizer, Tokenizer13a, TokenizerRegex};
 
 use pyo3::prelude::*;
@@ -18,15 +18,35 @@ fn tokenizer_13a(line: &str) -> PyResult<Vec<String>> {
     Ok(res)
 }
 
+/// Resolve `ref_len_method` string (including aliases) to `RefLenMethod`.
+///
+/// Accepted values:
+/// - `"shortest"` / `"hf"` → [`RefLenMethod::Shortest`]
+///   (HuggingFace evaluate / TF NMT compatible)
+/// - `"closest"` / `"sacrebleu"` → [`RefLenMethod::Closest`]
+///   (SacreBLEU / NIST mteval-v13a compatible)
+fn parse_ref_len_method(value: &str) -> PyResult<RefLenMethod> {
+    match value {
+        "shortest" | "hf" => Ok(RefLenMethod::Shortest),
+        "closest" | "sacrebleu" => Ok(RefLenMethod::Closest),
+        other => Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "Unknown ref_len_method {other:?}. \
+             Valid values: \"shortest\", \"hf\", \"closest\", \"sacrebleu\"."
+        ))),
+    }
+}
+
 #[pyfunction]
-#[pyo3(signature = (references, predictions, max_order=4, smooth=false))]
+#[pyo3(signature = (references, predictions, max_order=4, smooth=false, ref_len_method="shortest"))]
 fn compute(
     references: Vec<Vec<String>>,
     predictions: Vec<String>,
     max_order: usize,
     smooth: bool,
+    ref_len_method: &str,
 ) -> PyResult<Py<PyAny>> {
-    let bleu = compute_score(&references, &predictions, max_order, smooth);
+    let method = parse_ref_len_method(ref_len_method)?;
+    let bleu = compute_score(&references, &predictions, max_order, smooth, method);
     Python::attach(|py| {
         let bleu_dict = PyDict::new(py);
         bleu_dict.set_item("bleu", bleu.bleu)?;

@@ -67,7 +67,7 @@ pub fn compute_score(
     let predictions_vec: Vec<String> = predictions_js_array.convert()?;
     console_log!("predictions_vec: {:?}", predictions_vec);
 
-    let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth, bleuscore::bleu::RefLenMethod::Shortest);
     console_log!("bleu_result: {:?}", res);
     Ok(BleuScore {
         bleu: res.bleu,
@@ -88,7 +88,7 @@ pub fn compute_score_direct(
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth, bleuscore::bleu::RefLenMethod::Shortest);
     BleuScore {
         bleu: res.bleu,
         precisions: res.precisions,
@@ -109,7 +109,7 @@ pub fn compute_score_debug(
 ) -> BleuScore {
     println!("Debug: references = {:?}", references);
     println!("Debug: predictions = {:?}", predictions);
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth, bleuscore::bleu::RefLenMethod::Shortest);
     println!("Debug: result = {:?}", res);
     BleuScore {
         bleu: res.bleu,
