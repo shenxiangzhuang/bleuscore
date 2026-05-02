@@ -65,14 +65,23 @@ mod tests {
 
     #[test]
     fn test_parse_ref_len_method_shortest_variants() {
-        assert_eq!(parse_ref_len_method("shortest").unwrap(), RefLenMethod::Shortest);
+        assert_eq!(
+            parse_ref_len_method("shortest").unwrap(),
+            RefLenMethod::Shortest
+        );
         assert_eq!(parse_ref_len_method("hf").unwrap(), RefLenMethod::Shortest);
     }
 
     #[test]
     fn test_parse_ref_len_method_closest_variants() {
-        assert_eq!(parse_ref_len_method("closest").unwrap(), RefLenMethod::Closest);
-        assert_eq!(parse_ref_len_method("sacrebleu").unwrap(), RefLenMethod::Closest);
+        assert_eq!(
+            parse_ref_len_method("closest").unwrap(),
+            RefLenMethod::Closest
+        );
+        assert_eq!(
+            parse_ref_len_method("sacrebleu").unwrap(),
+            RefLenMethod::Closest
+        );
     }
 
     #[test]
