@@ -9,22 +9,15 @@
 [![CodSpeed Badge](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/shenxiangzhuang/bleuscore)
 
 [`bleuscore`](https://github.com/shenxiangzhuang/bleuscore)
-is a fast BLEU score calculator written in rust. You can check try the web demo [here](https://datahonor.com/bleuscore/) for a quick experience.
+is a fast BLEU score calculator written in rust. You can check try the web demo [here](https://shenxiangzhuang.github.io/bleuscore/) for a quick experience.
 
 
 ## Installation
 The python package has been published to [pypi](https://pypi.org/project/bleuscore/),
-so we can install it directly with many ways: 
+so we can install it directly: 
 
-- `uv`
-    ```bash
-    uv add bleuscore
-    ```
-
-- `pip`
-    ```bash
-    pip install bleuscore
-    ```
+- `uv`: `uv add bleuscore`
+- `pip`: `pip install bleuscore`
 
 ## Quick Start
 The usage is exactly same with [huggingface evaluate](https://huggingface.co/spaces/evaluate-metric/bleu):
@@ -60,6 +53,3 @@ print(results)
 We use the demo data shown in quick start to do this simple benchmark.
 You can check the [benchmark/simple](./benchmark/simple) for the benchmark source code.
 Detailed per-PR results are tracked automatically via the [Benchmark workflow](.github/workflows/benchmark.yml).
-
-
-
