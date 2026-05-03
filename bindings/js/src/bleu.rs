@@ -41,6 +41,16 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
+fn parse_ref_len_method(value: &str) -> Result<bleuscore::bleu::RefLenMethod, JsError> {
+    match value {
+        "shortest" | "hf" => Ok(bleuscore::bleu::RefLenMethod::Shortest),
+        "closest" | "sacrebleu" => Ok(bleuscore::bleu::RefLenMethod::Closest),
+        other => Err(JsError::new(&format!(
+            "Unknown ref_len_method {other:?}. Valid values: \"shortest\", \"hf\", \"closest\", \"sacrebleu\"."
+        ))),
+    }
+}
+
 #[derive(Debug, Default, Tsify, Serialize, Deserialize)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct BleuScore {
@@ -58,6 +68,7 @@ pub fn compute_score(
     predictions_js_array: VecString,
     max_order: usize,
     smooth: bool,
+    ref_len_method: &str,
 ) -> Result<BleuScore, JsError> {
     // Convert JsValue to Rust Vec<Vec<String>>
     let references_vec: Vec<Vec<String>> = references_js_array.convert()?;
@@ -67,7 +78,14 @@ pub fn compute_score(
     let predictions_vec: Vec<String> = predictions_js_array.convert()?;
     console_log!("predictions_vec: {:?}", predictions_vec);
 
-    let res = bleuscore::bleu::compute_score(&references_vec, &predictions_vec, max_order, smooth);
+    let method = parse_ref_len_method(ref_len_method)?;
+    let res = bleuscore::bleu::compute_score(
+        &references_vec,
+        &predictions_vec,
+        max_order,
+        smooth,
+        method,
+    );
     console_log!("bleu_result: {:?}", res);
     Ok(BleuScore {
         bleu: res.bleu,
@@ -88,7 +106,13 @@ pub fn compute_score_direct(
     max_order: usize,
     smooth: bool,
 ) -> BleuScore {
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(
+        references,
+        predictions,
+        max_order,
+        smooth,
+        bleuscore::bleu::RefLenMethod::Shortest,
+    );
     BleuScore {
         bleu: res.bleu,
         precisions: res.precisions,
@@ -109,7 +133,13 @@ pub fn compute_score_debug(
 ) -> BleuScore {
     println!("Debug: references = {:?}", references);
     println!("Debug: predictions = {:?}", predictions);
-    let res = bleuscore::bleu::compute_score(references, predictions, max_order, smooth);
+    let res = bleuscore::bleu::compute_score(
+        references,
+        predictions,
+        max_order,
+        smooth,
+        bleuscore::bleu::RefLenMethod::Shortest,
+    );
     println!("Debug: result = {:?}", res);
     BleuScore {
         bleu: res.bleu,
@@ -231,10 +261,11 @@ mod tests {
         // - VecString (predictions)
         // - usize (max_order)
         // - bool (smooth)
+        // - &str (ref_len_method)
         // And return Result<BleuScore, JsError>
 
         // We can't actually call it in non-WASM tests, but we can verify the types exist
-        let _: fn(VecVecString, VecString, usize, bool) -> Result<BleuScore, JsError> =
+        let _: fn(VecVecString, VecString, usize, bool, &str) -> Result<BleuScore, JsError> =
             compute_score;
     }
 
@@ -298,5 +329,40 @@ mod tests {
         assert!(score.bleu >= 0.0);
         assert!(score.bleu <= 1.0);
         assert_eq!(score.precisions.len(), 2);
+    }
+
+    #[test]
+    fn test_parse_ref_len_method_shortest_variants() {
+        assert!(matches!(
+            parse_ref_len_method("shortest"),
+            Ok(bleuscore::bleu::RefLenMethod::Shortest)
+        ));
+        assert!(matches!(
+            parse_ref_len_method("hf"),
+            Ok(bleuscore::bleu::RefLenMethod::Shortest)
+        ));
+    }
+
+    #[test]
+    fn test_parse_ref_len_method_closest_variants() {
+        assert!(matches!(
+            parse_ref_len_method("closest"),
+            Ok(bleuscore::bleu::RefLenMethod::Closest)
+        ));
+        assert!(matches!(
+            parse_ref_len_method("sacrebleu"),
+            Ok(bleuscore::bleu::RefLenMethod::Closest)
+        ));
+    }
+
+    #[test]
+    fn test_parse_ref_len_method_invalid() {
+        // JsError::new() panics on non-wasm targets, so we test via panic
+        // The function returns Err(JsError) for unknown values; on non-wasm the
+        // JsError construction itself panics, which also means it cannot return Ok.
+        let result = std::panic::catch_unwind(|| parse_ref_len_method("unknown"));
+        assert!(result.is_err(), "invalid method should not return Ok");
+        let result2 = std::panic::catch_unwind(|| parse_ref_len_method(""));
+        assert!(result2.is_err(), "empty method should not return Ok");
     }
 }

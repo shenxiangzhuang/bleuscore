@@ -19,6 +19,7 @@ fn e2e_single_sentence() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -37,6 +38,7 @@ fn e2e_multiple_references() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -72,6 +74,7 @@ fn e2e_batch_realistic(batch_size: usize) {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -86,6 +89,7 @@ fn e2e_short_texts() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -110,6 +114,7 @@ fn e2e_long_texts() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -125,6 +130,7 @@ fn e2e_perfect_match() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -142,6 +148,7 @@ fn e2e_complete_mismatch() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -159,6 +166,7 @@ fn e2e_special_chars() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -177,6 +185,7 @@ fn e2e_translation_scenario() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }
 
@@ -192,5 +201,6 @@ fn e2e_html_entities() {
         black_box(&predictions),
         black_box(4),
         black_box(true),
+        black_box(bleuscore::RefLenMethod::Shortest),
     ));
 }

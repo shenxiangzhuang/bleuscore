@@ -22,10 +22,9 @@
     "type": "git",
     "url": "https://github.com/shenxiangzhuang/bleuscore.git"
   },
-  "dependencies": {
-    "bleuscore-js": "^0.1.5"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "html-webpack-plugin": "^5.5.0",
     "webpack": "^5.106.2",
     "webpack-cli": "^5.1.0",

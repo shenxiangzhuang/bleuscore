@@ -1,4 +1,4 @@
-import init, { compute_score } from 'bleuscore-js';
+import { compute_score } from 'bleuscore-js';
 
 // Global variables
 let wasmLoaded = false;
@@ -18,7 +18,6 @@ function showError(message) {
 // Initialize WebAssembly
 async function initWasm() {
     try {
-        await init();
         wasmLoaded = true;
         console.log('✅ WebAssembly module loaded successfully');
     } catch (error) {
@@ -27,17 +26,13 @@ async function initWasm() {
     }
 }
 
-// Wait for DOM to be ready, then initialize
-document.addEventListener('DOMContentLoaded', () => {
-    initWasm();
-    new BleuScoreApp();
-});
-
 // Main Application Class
 class BleuScoreApp {
     constructor() {
+        this.refLenMethod = 'shortest';
         this.initializeElements();
         this.setupEventListeners();
+        this.updateRefLenMode(this.refLenMethod);
         this.addInitialPrediction();
     }
 
@@ -46,6 +41,7 @@ class BleuScoreApp {
         this.addPredictionBtn = document.getElementById('add-prediction-btn');
         this.ngramSelect = document.getElementById('ngram');
         this.smoothingCheckbox = document.getElementById('smoothing');
+        this.refLenModeButtons = document.querySelectorAll('.mode-option[data-ref-len-method]');
         this.calculateBtn = document.getElementById('calculate-btn');
         this.loadingDiv = document.getElementById('loading');
         this.resultsDiv = document.getElementById('results');
@@ -61,6 +57,11 @@ class BleuScoreApp {
     setupEventListeners() {
         this.calculateBtn.addEventListener('click', () => this.calculateScore());
         this.addPredictionBtn.addEventListener('click', () => this.addPrediction());
+        this.refLenModeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                this.updateRefLenMode(button.dataset.refLenMethod);
+            });
+        });
         
         // Allow Ctrl+Enter to calculate
         document.addEventListener('keydown', (e) => {
@@ -68,6 +69,17 @@ class BleuScoreApp {
                 e.preventDefault();
                 this.calculateScore();
             }
+        });
+    }
+
+    updateRefLenMode(method) {
+        this.refLenMethod = method === 'closest' ? 'closest' : 'shortest';
+        document.body.dataset.refLenMethod = this.refLenMethod;
+
+        this.refLenModeButtons.forEach(button => {
+            const isActive = button.dataset.refLenMethod === this.refLenMethod;
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
         });
     }
 
@@ -309,16 +321,16 @@ class BleuScoreApp {
             const maxOrder = parseInt(this.ngramSelect.value);
             const smooth = this.smoothingCheckbox.checked;
             
-            console.log('📊 Input data:', { predictions, references, maxOrder, smooth });
+            console.log('📊 Input data:', { predictions, references, maxOrder, smooth, refLenMethod: this.refLenMethod });
             
             // Data is already in the correct format for the WebAssembly function
             const referencesArray = references;
             const predictionsArray = predictions;
             
-            console.log('🔧 Formatted data:', { referencesArray, predictionsArray, maxOrder, smooth });
+            console.log('🔧 Formatted data:', { referencesArray, predictionsArray, maxOrder, smooth, refLenMethod: this.refLenMethod });
             
             // Call the WebAssembly function
-            const result = compute_score(referencesArray, predictionsArray, maxOrder, smooth);
+            const result = compute_score(referencesArray, predictionsArray, maxOrder, smooth, this.refLenMethod);
             
             console.log('✅ BLEU calculation successful:', result);
             
@@ -338,4 +350,16 @@ class BleuScoreApp {
             this.hideLoading();
         }
     }
-} 
+}
+
+function startApp() {
+    initWasm();
+    new BleuScoreApp();
+}
+
+// Wait for DOM to be ready, accounting for async WebAssembly module loading.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    startApp();
+}

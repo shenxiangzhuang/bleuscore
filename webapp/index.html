@@ -37,6 +37,16 @@
             --ring: 16 85% 45%;
             --radius: 0.5rem;
         }
+
+        body[data-ref-len-method="shortest"] {
+            --primary: 16 85% 45%;
+            --ring: 16 85% 45%;
+        }
+
+        body[data-ref-len-method="closest"] {
+            --primary: 202 83% 42%;
+            --ring: 202 83% 42%;
+        }
         
         * {
             border-color: hsl(var(--border));
@@ -213,6 +223,203 @@
             border: 1px solid hsl(var(--primary));
             background-color: hsl(var(--background));
         }
+
+        .mode-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+
+        .mode-switch {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.2rem;
+            padding: 0.2rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: calc(var(--radius) - 2px);
+            background-color: hsl(var(--background));
+            width: min(20rem, 100%);
+            box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.04);
+        }
+
+        .mode-option {
+            height: 2.15rem;
+            border: 0;
+            border-radius: calc(var(--radius) - 4px);
+            background: transparent;
+            color: hsl(var(--muted-foreground));
+            cursor: pointer;
+            font: inherit;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0 0.4rem;
+        }
+
+        .mode-name {
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        .mode-source {
+            border-radius: 9999px;
+            background-color: hsl(var(--muted));
+            color: hsl(var(--muted-foreground));
+            padding: 0.08rem 0.3rem;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+
+        .mode-option:hover {
+            color: hsl(var(--foreground));
+            background-color: hsl(var(--muted) / 0.7);
+        }
+
+        .mode-option.is-active {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.2);
+        }
+
+        .mode-option.is-active .mode-source {
+            background-color: hsl(var(--primary-foreground) / 0.18);
+            color: hsl(var(--primary-foreground));
+        }
+
+        .help-wrap {
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        .help-button {
+            width: 2.15rem;
+            height: 2.15rem;
+            border-radius: 9999px;
+            border: 1px solid hsl(var(--border));
+            background-color: hsl(var(--background));
+            color: hsl(var(--muted-foreground));
+            cursor: help;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .help-button:hover,
+        .help-button:focus-visible {
+            border-color: hsl(var(--primary));
+            color: hsl(var(--primary));
+            outline: none;
+        }
+
+        .help-tooltip {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            z-index: 20;
+            width: min(22rem, calc(100vw - 2rem));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            background-color: hsl(var(--popover));
+            color: hsl(var(--popover-foreground));
+            box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.35);
+            padding: 0.75rem;
+            opacity: 0;
+            transform: translateY(-0.25rem);
+            pointer-events: none;
+            transition: opacity 0.16s ease-in-out, transform 0.16s ease-in-out;
+        }
+
+        .help-wrap:hover .help-tooltip,
+        .help-wrap:focus-within .help-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .help-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .help-copy {
+            font-size: 0.72rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.4;
+        }
+
+        .help-copy strong {
+            color: hsl(var(--foreground));
+            font-weight: 700;
+        }
+
+        .config-bar {
+            border-bottom: 1px solid hsl(var(--border));
+            background-color: hsl(var(--muted) / 0.45);
+        }
+
+        .config-panel {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .config-group {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            min-height: 2.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            background-color: hsl(var(--background));
+            padding: 0.35rem 0.45rem;
+            box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.08);
+        }
+
+        .config-label {
+            margin: 0;
+            white-space: nowrap;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.68rem;
+            font-weight: 700;
+            max-width: 5.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .config-ngram {
+            width: 4.75rem;
+            flex: 0 0 auto;
+        }
+
+        .config-smoothing {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .config-mode {
+            flex: 1 0 30rem;
+            min-width: 30rem;
+        }
+
+        .config-action {
+            margin-left: auto;
+            min-width: 12rem;
+            flex: 0 0 auto;
+            height: 2.75rem;
+            box-shadow: 0 6px 14px -10px hsl(var(--primary));
+        }
         
         .badge {
             display: inline-flex;
@@ -249,7 +456,7 @@
             border: 2px solid hsl(var(--border));
             border-radius: var(--radius);
             background-color: hsl(var(--background));
-            padding: 0.75rem;
+            padding: 0.625rem;
             margin-bottom: 0.5rem;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -283,7 +490,7 @@
             border-radius: var(--radius);
             background-color: hsl(var(--primary) / 0.03);
             color: hsl(var(--primary));
-            padding: 1rem;
+            padding: 0.625rem;
             width: 100%;
             transition: all 0.2s ease-in-out;
             cursor: pointer;
@@ -333,7 +540,7 @@
         
         .score-display {
             text-align: center;
-            padding: 1.5rem;
+            padding: 1rem;
         }
         
         .score-number {
@@ -377,8 +584,8 @@
         
         .sticky-sidebar {
             position: sticky;
-            top: 1rem;
-            max-height: calc(100vh - 2rem);
+            top: 0.75rem;
+            max-height: calc(100vh - 1.5rem);
             overflow-y: auto;
         }
         
@@ -483,6 +690,15 @@
                 padding: 0.25rem 0.35rem;
                 gap: 0.25rem;
             }
+
+            .config-panel {
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .config-action {
+                margin-left: 0;
+            }
         }
 
         .footer {
@@ -552,7 +768,7 @@
         }
     </style>
 </head>
-<body>
+<body data-ref-len-method="shortest">
     <!-- Hero Section -->
     <div class="hero-section">
         <div class="max-w-6xl mx-auto px-4">
@@ -593,8 +809,60 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="max-w-6xl mx-auto px-4 py-6">
-            <div class="grid lg:grid-cols-2 gap-8">
+        <section class="config-bar">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="config-panel" aria-label="Configuration">
+                    <div class="config-group">
+                        <label for="ngram" class="label config-label">N-gram Order</label>
+                        <input type="number" id="ngram" class="input config-ngram" value="4" min="1" max="10">
+                    </div>
+
+                    <div class="config-group">
+                        <label class="label config-label">Smoothing</label>
+                        <div class="config-smoothing">
+                            <input type="checkbox" id="smoothing" class="checkbox">
+                            <label for="smoothing">Enable</label>
+                        </div>
+                    </div>
+
+                    <div class="config-group config-mode">
+                        <label class="label config-label">Reference Length Mode</label>
+                        <div class="mode-control">
+                            <div class="mode-switch" role="group" aria-label="Reference length mode">
+                                <button type="button" class="mode-option is-active" data-ref-len-method="shortest" aria-pressed="true">
+                                    <span class="mode-name">Shortest</span>
+                                    <span class="mode-source">HuggingFace</span>
+                                </button>
+                                <button type="button" class="mode-option" data-ref-len-method="closest" aria-pressed="false">
+                                    <span class="mode-name">Closest</span>
+                                    <span class="mode-source">SacreBLEU</span>
+                                </button>
+                            </div>
+                            <div class="help-wrap">
+                                <button type="button" class="help-button" aria-label="Reference length mode help">?</button>
+                                <div class="help-tooltip" role="tooltip">
+                                    <div class="help-title">Reference length mode</div>
+                                    <div class="help-copy">
+                                        <strong>Shortest</strong> uses the shortest reference for brevity penalty and matches HuggingFace evaluate / TF NMT behavior.<br><br>
+                                        <strong>Closest</strong> uses the reference length closest to each prediction, with shorter winning ties, matching SacreBLEU / NIST mteval-v13a.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="calculate-btn" class="btn btn-primary config-action">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                        </svg>
+                        Calculate BLEU Score
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div class="grid lg:grid-cols-2 gap-4">
                 <!-- Left Side: Input Area -->
                 <div class="space-y-4">
                     <!-- Predictions & References -->
@@ -616,41 +884,6 @@
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
                                 Add Prediction
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Settings -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Configuration</h2>
-                            <p class="card-description">
-                                Adjust the BLEU score calculation parameters.
-                            </p>
-                        </div>
-                        <div class="card-content">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label for="ngram" class="label">N-gram Order</label>
-                                    <input type="number" id="ngram" class="input" value="4" min="1" max="10">
-                                </div>
-                                
-                                <div class="space-y-1">
-                                    <label class="label">Smoothing</label>
-                                    <div class="flex items-center space-x-2 pt-1">
-                                        <input type="checkbox" id="smoothing" class="checkbox">
-                                        <label for="smoothing" class="text-sm">Enable smoothing</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="section-divider"></div>
-                            
-                            <button id="calculate-btn" class="btn btn-primary w-full">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                                </svg>
-                                Calculate BLEU Score
                             </button>
                         </div>
                     </div>

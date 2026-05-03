@@ -58,7 +58,7 @@ jobs:
         run: |
           set -e
           pip install bleuscore --no-index --find-links dist --force-reinstall
-          pip install pytest hypothesis evaluate
+          pip install pytest hypothesis evaluate sacrebleu
           cd bindings/python/tests
           pytest --hypothesis-show-statistics .
 
@@ -76,7 +76,7 @@ jobs:
           run: |
             set -e
             pip3 install bleuscore --no-index --find-links dist --force-reinstall
-            pip3 install pytest hypothesis evaluate
+            pip3 install pytest hypothesis evaluate sacrebleu
             cd bindings/python/tests
             pytest --hypothesis-show-statistics .
 
@@ -111,7 +111,7 @@ jobs:
         run: |
           set -e
           pip install bleuscore --no-index --find-links dist --force-reinstall
-          pip install pytest hypothesis evaluate
+          pip install pytest hypothesis evaluate sacrebleu
           cd bindings/python/tests
           pytest --hypothesis-show-statistics .
 
@@ -145,7 +145,7 @@ jobs:
         run: |
           set -e
           pip install bleuscore --no-index --find-links dist --force-reinstall
-          pip install pytest hypothesis evaluate
+          pip install pytest hypothesis evaluate sacrebleu
           cd bindings/python/tests
           pytest --hypothesis-show-statistics .
 

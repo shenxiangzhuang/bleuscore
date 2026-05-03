@@ -5,6 +5,20 @@ use rayon::prelude::*;
 use std::cmp::{max, min};
 use std::ops::Add;
 
+/// Method for selecting the effective reference length in multi-reference BLEU.
+///
+/// - `Shortest` – always uses the shortest reference length per segment
+///   (compatible with HuggingFace evaluate / TF NMT).
+/// - `Closest` – uses the reference length closest to the hypothesis length;
+///   on ties the shorter reference wins
+///   (compatible with SacreBLEU / NIST mteval-v13a).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum RefLenMethod {
+    #[default]
+    Shortest,
+    Closest,
+}
+
 /// The BLEU score data struct
 #[derive(Debug, Default)]
 pub struct BleuScore {
@@ -30,6 +44,16 @@ fn agg_stat(s1: Stat, s2: Stat) -> Stat {
     )
 }
 
+/// Returns the reference length closest to `hyp_len`.
+/// On ties, the shorter reference wins (matching SacreBLEU behaviour).
+fn closest_ref_len(hyp_len: usize, ref_lens: &[usize]) -> usize {
+    ref_lens
+        .iter()
+        .copied()
+        .min_by_key(|&rl| (hyp_len.abs_diff(rl), rl))
+        .unwrap()
+}
+
 /// compute the BLEU score with `Tokenizer13a` as default tokenizer.
 /// The implementation is based on [huggingface/nmt](https://github.com/huggingface/evaluate/blob/main/metrics/bleu/bleu.py)
 pub fn compute_score(
@@ -37,6 +61,7 @@ pub fn compute_score(
     predictions: &[String],
     max_order: usize,
     smooth: bool,
+    ref_len_method: RefLenMethod,
 ) -> BleuScore {
     let tokenizer = Tokenizer13a::new();
 
@@ -49,8 +74,12 @@ pub fn compute_score(
             let references_tokens: Vec<Vec<String>> =
                 references.iter().map(|x| tokenizer.tokenize(x)).collect();
 
-            let reference_length = references_tokens.iter().map(|x| x.len()).min().unwrap();
+            let ref_lens: Vec<usize> = references_tokens.iter().map(|x| x.len()).collect();
             let translation_length = translation_tokens.len();
+            let reference_length = match ref_len_method {
+                RefLenMethod::Shortest => *ref_lens.iter().min().unwrap(),
+                RefLenMethod::Closest => closest_ref_len(translation_length, &ref_lens),
+            };
 
             let mut possible_matches_by_order = vec![0; max_order];
             for order in 1..=max_order {
@@ -150,14 +179,20 @@ fn add_vectors<T: Add<Output = T>>(vec1: Vec<T>, vec2: Vec<T>) -> Vec<T> {
 
 #[cfg(test)]
 mod test {
-    use crate::bleu::{add_vectors, agg_stat, compute_score, Stat};
+    use crate::bleu::{add_vectors, agg_stat, closest_ref_len, compute_score, RefLenMethod, Stat};
     #[test]
     fn test_bleu() {
         let references: Vec<Vec<String>> = vec![vec!["Hello, World!".to_string()]];
         let predictions: Vec<String> = vec!["Yellow, World!".to_string()];
         let max_order: usize = 4;
         let smooth: bool = true;
-        let res = compute_score(&references, &predictions, max_order, smooth);
+        let res = compute_score(
+            &references,
+            &predictions,
+            max_order,
+            smooth,
+            RefLenMethod::Shortest,
+        );
         // (0.668740304976422, [0.8, 0.75, 0.6666666666666666, 0.5], 1.0, 1.0, 4, 4)
         println!("result: {:?}", res);
         assert!((res.bleu - 0.668740304976422).abs() < 1e-10);
@@ -189,9 +224,37 @@ mod test {
         let predictions: Vec<String> = vec!["a a".to_string()];
         let max_order: usize = 1;
         let smooth: bool = false;
-        let res = compute_score(&references, &predictions, max_order, smooth);
+        let res = compute_score(
+            &references,
+            &predictions,
+            max_order,
+            smooth,
+            RefLenMethod::Shortest,
+        );
 
         // Precision should be 0.5
         assert!((res.precisions[0] - 0.5).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_closest_ref_len() {
+        assert_eq!(closest_ref_len(4, &[3, 4]), 4);
+        assert_eq!(closest_ref_len(4, &[3, 5]), 3);
+        assert_eq!(closest_ref_len(4, &[6, 2, 5]), 5);
+    }
+
+    #[test]
+    fn test_bleu_ref_len_method_closest() {
+        let references: Vec<Vec<String>> = vec![vec![
+            "hello there !".to_string(),
+            "hello there general kenobi".to_string(),
+        ]];
+        let predictions: Vec<String> = vec!["hello there general kenobi".to_string()];
+
+        let shortest = compute_score(&references, &predictions, 4, false, RefLenMethod::Shortest);
+        let closest = compute_score(&references, &predictions, 4, false, RefLenMethod::Closest);
+
+        assert_eq!(shortest.reference_length, 3);
+        assert_eq!(closest.reference_length, 4);
     }
 }

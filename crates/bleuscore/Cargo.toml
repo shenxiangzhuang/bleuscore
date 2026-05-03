@@ -24,6 +24,9 @@ rayon.workspace = true
 ahash.workspace = true
 getrandom.workspace = true
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+
 [dev-dependencies]
 divan = { version = "4.1.0", package = "codspeed-divan-compat" }
 
