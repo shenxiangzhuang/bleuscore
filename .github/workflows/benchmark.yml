@@ -37,17 +37,24 @@ jobs:
       - name: Run benchmarks
         working-directory: benchmark
         run: |
-          hyperfine \
-            --warmup 1 \
-            --runs 3 \
-            --export-markdown result.md \
-            --export-json result.json \
-            "python simple/rs_bleuscore.py 1000" \
-            "python simple/local_hf_bleu.py 1000" \
-            "python simple/rs_bleuscore.py 10000" \
-            "python simple/local_hf_bleu.py 10000" \
-            "python simple/rs_bleuscore.py 100000" \
-            "python simple/local_hf_bleu.py 100000"
+          # Run each size as an independent group; local_hf_bleu is the baseline
+          for N in 1000 10000 100000; do
+            hyperfine \
+              --warmup 1 \
+              --runs 3 \
+              --reference "python simple/local_hf_bleu.py $N" \
+              --export-markdown "result_${N}.md" \
+              "python simple/rs_bleuscore.py $N" \
+              "python simple/local_hf_bleu.py $N"
+          done
+
+          # Merge all per-size tables into one markdown file
+          echo '| N | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |' > result.md
+          echo '|---:|:---|---:|---:|---:|---:|' >> result.md
+          for N in 1000 10000 100000; do
+            # Strip the header rows and append data rows, prefixing with N
+            tail -n +3 "result_${N}.md" | grep -v '^$' | sed "s/^| /| ${N} | /" >> result.md
+          done
 
       - name: Read benchmark results
         id: bench
@@ -65,6 +72,8 @@ jobs:
           comment-tag: hyperfine-benchmark
           body: |
             ## Benchmark Results (hyperfine)
+
+            > Baseline: `local_hf_bleu` — relative values show how many times faster/slower `rs_bleuscore` is.
 
             ${{ steps.bench.outputs.RESULT }}
 
