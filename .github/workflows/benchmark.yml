@@ -64,11 +64,20 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
+      - name: Find existing benchmark comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Benchmark Results (hyperfine)
+
       - name: Post PR comment
         uses: peter-evans/create-or-update-comment@v4
         with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          comment-tag: hyperfine-benchmark
+          edit-mode: replace
           body: |
             ## Benchmark Results (hyperfine)
 
