@@ -1,0 +1,71 @@
+name: Benchmark
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  benchmark:
+    name: Run hyperfine benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          args: --release --out dist --find-interpreter --manifest-path bindings/python/Cargo.toml
+          manylinux: auto
+
+      - name: Install bleuscore and benchmark deps
+        run: |
+          pip install bleuscore --no-index --find-links dist --force-reinstall
+          pip install sacrebleu
+
+      - name: Install hyperfine
+        run: |
+          wget -q https://github.com/sharkdp/hyperfine/releases/download/v1.18.0/hyperfine_1.18.0_amd64.deb
+          sudo dpkg -i hyperfine_1.18.0_amd64.deb
+
+      - name: Run benchmarks
+        working-directory: benchmark
+        run: |
+          hyperfine \
+            --warmup 1 \
+            --runs 3 \
+            --export-markdown result.md \
+            --export-json result.json \
+            "python simple/rs_bleuscore.py 1000" \
+            "python simple/local_hf_bleu.py 1000" \
+            "python simple/rs_bleuscore.py 10000" \
+            "python simple/local_hf_bleu.py 10000" \
+            "python simple/rs_bleuscore.py 100000" \
+            "python simple/local_hf_bleu.py 100000"
+
+      - name: Read benchmark results
+        id: bench
+        run: |
+          {
+            echo 'RESULT<<EOF'
+            cat benchmark/result.md
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-tag: hyperfine-benchmark
+          body: |
+            ## Benchmark Results (hyperfine)
+
+            ${{ steps.bench.outputs.RESULT }}
+
+            > `bleuscore` vs `local_hf_bleu` · ${{ runner.os }} · [run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
