@@ -37,23 +37,22 @@ jobs:
       - name: Run benchmarks
         working-directory: benchmark
         run: |
-          # Run each size as an independent group; local_hf_bleu is the baseline
+          # Run each size as an independent hyperfine group
           for N in 1000 10000 100000; do
             hyperfine \
               --warmup 1 \
               --runs 3 \
-              --reference "python simple/local_hf_bleu.py $N" \
               --export-markdown "result_${N}.md" \
               "python simple/rs_bleuscore.py $N" \
               "python simple/local_hf_bleu.py $N"
           done
 
-          # Merge all per-size tables into one markdown file
-          echo '| N | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |' > result.md
-          echo '|---:|:---|---:|---:|---:|---:|' >> result.md
+          # Merge per-size tables with size headers
+          > result.md
           for N in 1000 10000 100000; do
-            # Strip the header rows and append data rows, prefixing with N
-            tail -n +3 "result_${N}.md" | grep -v '^$' | sed "s/^| /| ${N} | /" >> result.md
+            echo "### N = ${N}" >> result.md
+            cat "result_${N}.md" >> result.md
+            echo >> result.md
           done
 
       - name: Read benchmark results
@@ -73,7 +72,7 @@ jobs:
           body: |
             ## Benchmark Results (hyperfine)
 
-            > Baseline: `local_hf_bleu` — relative values show how many times faster/slower `rs_bleuscore` is.
+            > Each size is a separate group. `Relative` is normalized to the fastest command in that group (`rs_bleuscore`); `local_hf_bleu` shows how many times slower it is.
 
             ${{ steps.bench.outputs.RESULT }}
 
