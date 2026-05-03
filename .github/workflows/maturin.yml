@@ -116,12 +116,7 @@ jobs:
           pytest --hypothesis-show-statistics .
 
   macos:
-    runs-on: ${{ matrix.platform.runner }}
-    strategy:
-      matrix:
-        platform:
-          - runner: macos-14
-            target: aarch64
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -130,15 +125,14 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          target: ${{ matrix.platform.target }}
+          target: aarch64
           args: --release --out dist --find-interpreter --manifest-path bindings/python/Cargo.toml
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
-          name: wheels-macos-${{ matrix.platform.target }}
+          name: wheels-macos-aarch64
           path: dist
       - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'aarch64') }}
         shell: bash
         run: |
           set -e
