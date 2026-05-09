@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RefLenMethod"],"fn":["compute_score"],"struct":["BleuScore"]};
