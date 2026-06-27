@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["REGEX_ARRAY","Tokenizer13a","TokenizerRegex"],"trait":["Tokenizer"]};

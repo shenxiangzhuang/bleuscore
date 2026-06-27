@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["bleuscore_js",[["impl <a class=\"trait\" href=\"https://docs.rs/wasm-bindgen/0.2/wasm_bindgen/convert/traits/trait.IntoJsGeneric.html\" title=\"trait wasm_bindgen::convert::traits::IntoJsGeneric\">IntoJsGeneric</a> for <a class=\"struct\" href=\"bleuscore_js/bleu/struct.VecString.html\" title=\"struct bleuscore_js::bleu::VecString\">VecString</a><div class=\"where\">where\n    <a class=\"struct\" href=\"bleuscore_js/bleu/struct.VecString.html\" title=\"struct bleuscore_js::bleu::VecString\">VecString</a>: <a class=\"trait\" href=\"https://docs.rs/wasm-bindgen/0.2/wasm_bindgen/convert/traits/trait.JsGeneric.html\" title=\"trait wasm_bindgen::convert::traits::JsGeneric\">JsGeneric</a>,</div>",0],["impl <a class=\"trait\" href=\"https://docs.rs/wasm-bindgen/0.2/wasm_bindgen/convert/traits/trait.IntoJsGeneric.html\" title=\"trait wasm_bindgen::convert::traits::IntoJsGeneric\">IntoJsGeneric</a> for <a class=\"struct\" href=\"bleuscore_js/bleu/struct.VecVecString.html\" title=\"struct bleuscore_js::bleu::VecVecString\">VecVecString</a><div class=\"where\">where\n    <a class=\"struct\" href=\"bleuscore_js/bleu/struct.VecVecString.html\" title=\"struct bleuscore_js::bleu::VecVecString\">VecVecString</a>: <a class=\"trait\" href=\"https://docs.rs/wasm-bindgen/0.2/wasm_bindgen/convert/traits/trait.JsGeneric.html\" title=\"trait wasm_bindgen::convert::traits::JsGeneric\">JsGeneric</a>,</div>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[1412]}
